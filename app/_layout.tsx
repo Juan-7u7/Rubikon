@@ -1,38 +1,42 @@
 // app/_layout.tsx
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import CustomHeader from './components/CustomHeader';
-import ReusableModal from './components/ReusableModal';
-import SettingsContent from './components/SettingsContent';
-import UserContent from './components/UserContent';
-// 1. Imports de Supabase y componentes de Auth
-import { Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
-import LoginContent from './components/LoginContent';
-import RegisterContent from './components/RegisterContent';
-// 2. Imports de React Native
 import { SafeAreaView, StyleSheet } from 'react-native';
-// 3. Imports del Contexto de Alertas
+// Imports de Componentes
+import CustomHeader from '../app/components/CustomHeader';
+import LoginContent from '../app/components/LoginContent';
+import RegisterContent from '../app/components/RegisterContent';
+import ReusableModal from '../app/components/ReusableModal';
+import SettingsContent from '../app/components/SettingsContent';
+import UserContent from '../app/components/UserContent';
+// Imports de Contexto y Estilos
 import { AlertProvider, useAlert } from '../context/AlertContext';
 import { theme } from '../styles/theme';
+// Imports de Supabase
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
 
 SplashScreen.preventAutoHideAsync();
 
-// 4. Mueve el layout principal a su propio componente
-//    para que pueda usar el hook 'useAlert'
+// Definimos el tipo de dato para el perfil
+interface Profile {
+  username: string;
+}
+
 function RootLayoutContent() {
   const [fontsLoaded, fontError] = useFonts({
     'Honk': require('../assets/Fonts/Honk.ttf'),
   });
 
   const [session, setSession] = useState<Session | null>(null);
+  // 1. NUEVO ESTADO para guardar el perfil del jugador
+  const [profile, setProfile] = useState<Profile | null>(null);
+
   const [visibleModal, setVisibleModal] = useState<
     'settings' | 'user' | 'login' | 'register' | null
   >(null);
   
-  // 5. Usa el hook de alertas
   const { showAlert } = useAlert();
 
   useEffect(() => {
@@ -40,14 +44,39 @@ function RootLayoutContent() {
       SplashScreen.hideAsync();
     }
 
+    // 2. Función para buscar el perfil
+    const fetchProfile = async (session: Session) => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username') // Solo traemos el username
+        .eq('id', session.user.id) // Donde el ID coincida
+        .single(); // Esperamos solo un resultado
+
+      if (error) {
+        console.warn('Error buscando el perfil:', error.message);
+      } else if (data) {
+        setProfile(data); // Guardamos el perfil: { username: '...' }
+      }
+    };
+
+    // 3. Cargar sesión inicial Y PERFIL
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session) {
+        fetchProfile(session); // Si hay sesión, busca el perfil
+      }
     });
 
+    // 4. Escuchar cambios (Login/Logout) Y BUSCAR PERFIL
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      if (session) {
+        fetchProfile(session); // Si el usuario inicia sesión, busca el perfil
+      } else {
+        setProfile(null); // Si cierra sesión, limpia el perfil
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -57,11 +86,9 @@ function RootLayoutContent() {
     return null;
   }
 
-  // --- Funciones de Auth actualizadas ---
   const handleLogout = () => {
     supabase.auth.signOut();
     setVisibleModal(null);
-    // 6. Reemplaza Alert.alert() por showAlert()
     showAlert('¡Hasta luego!', 'Has cerrado sesión.');
   };
 
@@ -71,9 +98,7 @@ function RootLayoutContent() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
-
-      {/* Header (se conecta al modal de 'settings' y 'user') */}
+      {/* ... (Tu StatusBar y CustomHeader) ... */}
       <CustomHeader
         title="RUBIKON"
         leftIcon="settings"
@@ -82,7 +107,6 @@ function RootLayoutContent() {
         onPressRight={() => setVisibleModal('user')}
       />
 
-      {/* El Stack maneja las pantallas (como index.tsx) */}
       <Stack
         screenOptions={{
           headerShown: false,
@@ -92,10 +116,8 @@ function RootLayoutContent() {
         }}
       />
 
-      {/* --- MODALES CONECTADOS A SUPABASE --- */}
-
-      {/* Modal de Ajustes */}
-      <ReusableModal
+      {/* ... (Modal de Ajustes) ... */}
+       <ReusableModal
         title="Ajustes"
         visible={visibleModal === 'settings'}
         onClose={closeModal}
@@ -103,21 +125,25 @@ function RootLayoutContent() {
         <SettingsContent />
       </ReusableModal>
 
-      {/* Modal de Usuario (usa el estado 'session') */}
+      {/* 5. MODAL DE USUARIO (ACTUALIZADO) */}
       <ReusableModal
-        title={session ? 'Perfil de Usuario' : 'Bienvenido'}
+        title={session ? 'Perfil de Jugador' : 'Bienvenido'}
         visible={visibleModal === 'user'}
         onClose={closeModal}
       >
         <UserContent
           isLoggedIn={!!session}
+          // Pasa los nuevos datos al componente
+          username={profile?.username}
+          email={session?.user?.email}
+          
           onLoginPress={openLoginModal}
           onRegisterPress={openRegisterModal}
           onLogoutPress={handleLogout}
         />
       </ReusableModal>
 
-      {/* Modal de Login (con componente real) */}
+      {/* ... (Modal de Login y Registro) ... */}
       <ReusableModal
         title="Iniciar Sesión"
         visible={visibleModal === 'login'}
@@ -125,8 +151,6 @@ function RootLayoutContent() {
       >
         <LoginContent onLoginSuccess={closeModal} />
       </ReusableModal>
-
-      {/* Modal de Registro (con componente real) */}
       <ReusableModal
         title="Crear Cuenta"
         visible={visibleModal === 'register'}
@@ -138,7 +162,7 @@ function RootLayoutContent() {
   );
 }
 
-// 7. El componente exportado envuelve todo en el Provider
+// El componente exportado envuelve todo en el Provider
 export default function RootLayout() {
   return (
     <AlertProvider>

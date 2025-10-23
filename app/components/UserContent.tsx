@@ -2,27 +2,29 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+// 1. Ajusta la ruta del import si 'styles' está en la raíz
 import { theme } from '../../styles/theme';
 
-// 1. Definimos las props que el componente necesita
+// 2. Actualizamos las props que el componente recibe
 interface UserContentProps {
   isLoggedIn: boolean;
+  username?: string; // Hacemos opcional el username
+  email?: string; // Hacemos opcional el email
   onLoginPress: () => void;
   onRegisterPress: () => void;
   onLogoutPress: () => void;
-  // (Puedes añadir más props para "Editar Perfil" etc. luego)
 }
 
 export default function UserContent({
   isLoggedIn,
+  username, // 3. Recibimos los nuevos props
+  email, // 3. Recibimos los nuevos props
   onLoginPress,
   onRegisterPress,
   onLogoutPress,
 }: UserContentProps) {
 
-  // ---------------------------------------------
-  // VISTA PARA INVITADO
-  // ---------------------------------------------
+  // ... (La Vista de Invitado no cambia) ...
   const GuestView = () => (
     <View>
       {/* Cabecera de Invitado */}
@@ -49,7 +51,7 @@ export default function UserContent({
           <Feather
             name="log-in"
             size={theme.iconSizes.medium}
-            color={theme.colors.primary} // Texto blanco
+            color={theme.colors.primary}
             style={styles.actionIcon}
           />
           <Text style={[styles.guestButtonText, styles.primaryButtonText]}>
@@ -63,7 +65,7 @@ export default function UserContent({
           <Feather
             name="plus-circle"
             size={theme.iconSizes.medium}
-            color={theme.colors.primary} // Texto blanco
+            color={theme.colors.primary}
             style={styles.actionIcon}
           />
           <Text style={[styles.guestButtonText, styles.secondaryButtonText]}>
@@ -75,11 +77,11 @@ export default function UserContent({
   );
 
   // ---------------------------------------------
-  // VISTA PARA USUARIO LOGUEADO
+  // VISTA PARA USUARIO LOGUEADO (ACTUALIZADA)
   // ---------------------------------------------
   const UserView = () => (
     <View>
-      {/* Cabecera de Perfil (la que ya tenías) */}
+      {/* Cabecera de Perfil */}
       <View style={styles.profileHeader}>
         <View style={styles.avatarContainer}>
           <Feather
@@ -89,8 +91,9 @@ export default function UserContent({
           />
         </View>
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>Nombre de Usuario</Text>
-          <Text style={styles.userEmail}>usuario@email.com</Text>
+          {/* 4. Usamos los props con un fallback */}
+          <Text style={styles.userName}>{username || 'Cargando...'}</Text>
+          <Text style={styles.userEmail}>{email || '...'}</Text>
         </View>
       </View>
 
@@ -106,8 +109,6 @@ export default function UserContent({
           <Text style={styles.actionText}>Editar Perfil</Text>
         </TouchableOpacity>
         
-        {/* ... (otras acciones como "Cuenta y Seguridad") ... */}
-
         <TouchableOpacity style={styles.actionButton} onPress={onLogoutPress}>
           <Feather
             name="log-out"
@@ -123,9 +124,7 @@ export default function UserContent({
     </View>
   );
 
-  // ---------------------------------------------
-  // RENDERIZADO CONDICIONAL
-  // ---------------------------------------------
+  // ... (El renderizado condicional no cambia) ...
   return (
     <View style={styles.container}>
       {isLoggedIn ? <UserView /> : <GuestView />}
@@ -133,7 +132,7 @@ export default function UserContent({
   );
 }
 
-// 4. Estilos actualizados (con estilos de "Invitado" añadidos)
+// ... (Los estilos no cambian) ...
 const styles = StyleSheet.create({
   container: {
     paddingBottom: theme.spacing.s,
@@ -159,6 +158,7 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSizes.title,
     color: theme.colors.primary,
     marginBottom: theme.spacing.s / 2,
+    textTransform: 'capitalize', // (Opcional) Pone la primera letra en mayúscula
   },
   userEmail: {
     fontSize: theme.fontSizes.bodySmall,
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
 
   // --- NUEVOS Estilos de Invitado ---
   guestActionsContainer: {
-    gap: theme.spacing.m, // Espacio entre los botones
+    gap: theme.spacing.m,
   },
   guestButton: {
     flexDirection: 'row',
@@ -204,17 +204,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   primaryButton: {
-    backgroundColor: theme.colors.accent, // Botón azul
+    backgroundColor: theme.colors.accent,
   },
   primaryButtonText: {
-    color: theme.colors.primary, // Texto blanco
+    color: theme.colors.primary,
   },
   secondaryButton: {
     backgroundColor: 'transparent',
     borderWidth: 2,
-    borderColor: theme.colors.primary, // Borde blanco
+    borderColor: theme.colors.primary,
   },
   secondaryButtonText: {
-    color: theme.colors.primary, // Texto blanco
+    color: theme.colors.primary,
   },
 });
