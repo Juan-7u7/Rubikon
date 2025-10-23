@@ -8,7 +8,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Bienvenido a RUBIKON</Text>
       <Text style={styles.subtitle}>
-        Este es el contenido de tu pantalla principal.
+        Proximamente mas funciones! :D
       </Text>
     </View>
   );
