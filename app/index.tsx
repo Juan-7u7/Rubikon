@@ -1,29 +1,39 @@
+// app/index.tsx (Este es el código que debe ir aquí)
+
 import { StyleSheet, Text, View } from 'react-native';
+import { theme } from './styles/theme'; // Importamos nuestro tema
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>RUBIKON</Text>
-      <Text style={styles.subtitle}>Esto usa la fuente Honk</Text>
+      <Text style={styles.title}>Bienvenido a RUBIKON</Text>
+      <Text style={styles.subtitle}>
+        Este es el contenido de tu pantalla principal.
+      </Text>
     </View>
   );
 }
 
+// Estilos específicos para esta pantalla
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000000', // (Heredado de _layout, pero es bueno tenerlo)
+    // El color de fondo ya lo pone el layout,
+    // pero podemos asegurarlo aquí también.
+    padding: theme.spacing.l,
   },
   title: {
-    fontFamily: 'Honk', // <-- ¡AQUÍ LA USAS!
-    fontSize: 60,
-    color: '#FFFFFF',
+    fontFamily: theme.fonts.main,
+    fontSize: theme.fontSizes.header, // Usa el tamaño del header del tema
+    color: theme.colors.primary,
+    textAlign: 'center',
+    marginBottom: theme.spacing.m,
   },
   subtitle: {
-    fontFamily: 'Honk',
-    fontSize: 30,
-    color: '#AAAAAA',
+    fontSize: 18, // Deberíamos añadir 'body: 18' al tema
+    color: theme.colors.primary,
+    textAlign: 'center',
   },
 });

@@ -1,50 +1,82 @@
-import { useFonts } from 'expo-font'; // 1. Importar useFonts
+// app/_layout.tsx (Este es el código que debe ir aquí)
+
+import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
+import CustomHeader from './components/CustomHeader';
+import ReusableModal from './components/ReusableModal';
+import SettingsContent from './components/SettingsContent';
+import UserContent from './components/UserContent';
+import { theme } from './styles/theme'; // Importar el Tema
 
-// 2. Evita que la pantalla de carga se oculte automáticamente
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  // 3. Cargar el mapa de fuentes
   const [fontsLoaded, fontError] = useFonts({
     'Honk': require('../assets/Fonts/Honk.ttf'),
-    // 'Honk-Bold': require('../assets/fonts/Honk-Bold.ttf'), // (Si tuvieras otras...)
   });
+  
+  const [visibleModal, setVisibleModal] = useState<'settings' | 'user' | null>(null);
 
-  // 4. Ocultar la pantalla de carga cuando las fuentes estén listas
   useEffect(() => {
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
 
-  // 5. No mostrar nada hasta que las fuentes carguen (o si hay un error)
   if (!fontsLoaded && !fontError) {
     return null;
   }
 
-  // 6. Ahora que las fuentes están cargadas, renderizamos la app
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
+
+      {/* Header personalizado con conexión a los modales */}
+      <CustomHeader
+        title="RUBIKON"
+        leftIcon="settings"
+        rightIcon="user"
+        onPressLeft={() => setVisibleModal('settings')}
+        onPressRight={() => setVisibleModal('user')}
+      />
+
+      {/* El Stack maneja las pantallas (como index.tsx) */}
       <Stack
         screenOptions={{
           headerShown: false,
           contentStyle: {
-            backgroundColor: '#000000',
+            backgroundColor: theme.colors.background, // Usar el Tema
           },
         }}
       />
+
+      {/* Modales */}
+      <ReusableModal
+        title="Ajustes"
+        visible={visibleModal === 'settings'}
+        onClose={() => setVisibleModal(null)}
+      >
+        <SettingsContent />
+      </ReusableModal>
+
+      <ReusableModal
+        title="Perfil de Usuario"
+        visible={visibleModal === 'user'}
+        onClose={() => setVisibleModal(null)}
+      >
+        <UserContent />
+      </ReusableModal>
+      
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#000000',
+    flex: 1, // ¡NECESARIO para que la app ocupe la pantalla!
+    backgroundColor: theme.colors.background, // ¡NECESARIO para el color del "notch"!
   },
 });
