@@ -1,12 +1,13 @@
+// tsconfig.json
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
+    
+    // "paths" SE HA ELIMINADO DE AQUÍ
+
+    "esModuleInterop": true,
+    "importHelpers": true
   },
   "include": [
     "**/*.ts",

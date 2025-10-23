@@ -2,8 +2,8 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
 import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
-import { styles } from '../styles/Modal.styles';
-import { theme } from '../styles/theme';
+import { styles } from '../../styles/Modal.styles';
+import { theme } from '../../styles/theme';
 
 // --- ¡AQUÍ ESTABA EL PROBLEMA! ---
 // Debes definir las propiedades que el componente espera recibir.

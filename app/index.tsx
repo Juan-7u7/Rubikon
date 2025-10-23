@@ -1,7 +1,7 @@
 // app/index.tsx (Este es el código que debe ir aquí)
 
 import { StyleSheet, Text, View } from 'react-native';
-import { theme } from './styles/theme'; // Importamos nuestro tema
+import { theme } from '../styles/theme'; // Importamos nuestro tema
 
 export default function HomeScreen() {
   return (

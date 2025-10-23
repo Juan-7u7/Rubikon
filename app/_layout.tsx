@@ -1,40 +1,79 @@
-// app/_layout.tsx (Este es el código que debe ir aquí)
-
+// app/_layout.tsx
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
 import CustomHeader from './components/CustomHeader';
 import ReusableModal from './components/ReusableModal';
 import SettingsContent from './components/SettingsContent';
 import UserContent from './components/UserContent';
-import { theme } from './styles/theme'; // Importar el Tema
+// 1. Imports de Supabase y componentes de Auth
+import { Session } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabase';
+import LoginContent from './components/LoginContent';
+import RegisterContent from './components/RegisterContent';
+// 2. Imports de React Native
+import { SafeAreaView, StyleSheet } from 'react-native';
+// 3. Imports del Contexto de Alertas
+import { AlertProvider, useAlert } from '../context/AlertContext';
+import { theme } from '../styles/theme';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+// 4. Mueve el layout principal a su propio componente
+//    para que pueda usar el hook 'useAlert'
+function RootLayoutContent() {
   const [fontsLoaded, fontError] = useFonts({
     'Honk': require('../assets/Fonts/Honk.ttf'),
   });
+
+  const [session, setSession] = useState<Session | null>(null);
+  const [visibleModal, setVisibleModal] = useState<
+    'settings' | 'user' | 'login' | 'register' | null
+  >(null);
   
-  const [visibleModal, setVisibleModal] = useState<'settings' | 'user' | null>(null);
+  // 5. Usa el hook de alertas
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync();
     }
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, [fontsLoaded, fontError]);
 
   if (!fontsLoaded && !fontError) {
     return null;
   }
 
+  // --- Funciones de Auth actualizadas ---
+  const handleLogout = () => {
+    supabase.auth.signOut();
+    setVisibleModal(null);
+    // 6. Reemplaza Alert.alert() por showAlert()
+    showAlert('¡Hasta luego!', 'Has cerrado sesión.');
+  };
+
+  const openLoginModal = () => setVisibleModal('login');
+  const openRegisterModal = () => setVisibleModal('register');
+  const closeModal = () => setVisibleModal(null);
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      {/* Header personalizado con conexión a los modales */}
+      {/* Header (se conecta al modal de 'settings' y 'user') */}
       <CustomHeader
         title="RUBIKON"
         leftIcon="settings"
@@ -48,35 +87,69 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           contentStyle: {
-            backgroundColor: theme.colors.background, // Usar el Tema
+            backgroundColor: theme.colors.background,
           },
         }}
       />
 
-      {/* Modales */}
+      {/* --- MODALES CONECTADOS A SUPABASE --- */}
+
+      {/* Modal de Ajustes */}
       <ReusableModal
         title="Ajustes"
         visible={visibleModal === 'settings'}
-        onClose={() => setVisibleModal(null)}
+        onClose={closeModal}
       >
         <SettingsContent />
       </ReusableModal>
 
+      {/* Modal de Usuario (usa el estado 'session') */}
       <ReusableModal
-        title="Perfil de Usuario"
+        title={session ? 'Perfil de Usuario' : 'Bienvenido'}
         visible={visibleModal === 'user'}
-        onClose={() => setVisibleModal(null)}
+        onClose={closeModal}
       >
-        <UserContent />
+        <UserContent
+          isLoggedIn={!!session}
+          onLoginPress={openLoginModal}
+          onRegisterPress={openRegisterModal}
+          onLogoutPress={handleLogout}
+        />
       </ReusableModal>
-      
+
+      {/* Modal de Login (con componente real) */}
+      <ReusableModal
+        title="Iniciar Sesión"
+        visible={visibleModal === 'login'}
+        onClose={closeModal}
+      >
+        <LoginContent onLoginSuccess={closeModal} />
+      </ReusableModal>
+
+      {/* Modal de Registro (con componente real) */}
+      <ReusableModal
+        title="Crear Cuenta"
+        visible={visibleModal === 'register'}
+        onClose={closeModal}
+      >
+        <RegisterContent onRegisterSuccess={closeModal} />
+      </ReusableModal>
     </SafeAreaView>
+  );
+}
+
+// 7. El componente exportado envuelve todo en el Provider
+export default function RootLayout() {
+  return (
+    <AlertProvider>
+      <RootLayoutContent />
+    </AlertProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // ¡NECESARIO para que la app ocupe la pantalla!
-    backgroundColor: theme.colors.background, // ¡NECESARIO para el color del "notch"!
+    flex: 1,
+    backgroundColor: theme.colors.background,
   },
 });
