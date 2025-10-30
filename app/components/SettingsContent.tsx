@@ -54,25 +54,6 @@ export default function SettingsContent() {
         />
       </View>
 
-      {/* --- Sección de Apariencia --- */}
-      <Text style={styles.sectionTitle}>Apariencia</Text>
-      <View style={styles.section}>
-        <SettingsRow
-          title="Tema"
-          leftIcon="moon"
-          rightContent={
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={styles.rowValue}>Oscuro</Text>
-              <Feather
-                name="chevron-right"
-                size={22}
-                color={theme.colors.secondary}
-              />
-            </View>
-          }
-        />
-      </View>
-
       {/* --- Sección "Acerca de" --- */}
       <Text style={styles.sectionTitle}>Acerca de</Text>
       <View style={styles.section}>
