@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
   // Contenedor principal del header
   headerContainer: {
     width: '100%',
-    height: 110, // Altura estándar para un header
+    height: 50, // Altura estándar para un header
     flexDirection: 'row', // Alinear horizontalmente
     alignItems: 'center', // Centrar verticalmente
     justifyContent: 'space-between', // Distribuir el espacio
