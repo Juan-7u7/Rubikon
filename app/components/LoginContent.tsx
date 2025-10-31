@@ -5,7 +5,8 @@
  * para mostrar mensajes de error.
  */
 
-import { useState } from 'react';
+// Importamos 'memo' de React para la optimización.
+import React, { memo, useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAlert } from '../../context/AlertContext';
 import { supabase } from '../../lib/supabase';
@@ -20,10 +21,14 @@ interface LoginContentProps {
   onLoginSuccess: () => void;
 }
 
-export default function LoginContent({ onLoginSuccess }: LoginContentProps) {
+// Envolvemos el componente con React.memo.
+// Esto previene que se vuelva a renderizar si sus props (onLoginSuccess)
+// no han cambiado. Aunque el componente tiene estado interno, esta optimización
+// es útil si el componente padre se renderiza por razones que no afectan a LoginContent.
+const LoginContent = memo(({ onLoginSuccess }: LoginContentProps) => {
   // Hook para mostrar alertas personalizadas en la aplicación
   const { showAlert } = useAlert();
-  
+
   // Estados para manejar el formulario
   const [email, setEmail] = useState(''); // Estado para el campo de email
   const [password, setPassword] = useState(''); // Estado para el campo de contraseña
@@ -82,15 +87,18 @@ export default function LoginContent({ onLoginSuccess }: LoginContentProps) {
       <TouchableOpacity
         style={[
           styles.button,
-          loading && styles.buttonDisabled // Aplica estilo de deshabilitado durante la carga
+          loading && styles.buttonDisabled, // Aplica estilo de deshabilitado durante la carga
         ]}
         onPress={handleLogin}
         disabled={loading} // Deshabilita el botón durante la carga
       >
         <Text style={styles.buttonText}>
-          {loading ? 'Ingresando...' : 'Iniciar Sesión'} {/* Texto dinámico según el estado */}
+          {loading ? 'Ingresando...' : 'Iniciar Sesión'}{' '}
+          {/* Texto dinámico según el estado */}
         </Text>
       </TouchableOpacity>
     </View>
   );
-}
+});
+
+export default LoginContent;

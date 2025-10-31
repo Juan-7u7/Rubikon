@@ -1,9 +1,8 @@
 // app/components/SettingsContent.tsx
 import { Feather } from '@expo/vector-icons';
-import React, { useState } from 'react';
-// 1. Quita 'StyleSheet'
+// Importamos 'memo' de React para la optimización.
+import React, { memo, useState } from 'react';
 import { Switch, Text, TouchableOpacity, View } from 'react-native';
-// 2. Importa tus estilos desde el nuevo archivo
 import { styles } from '../../styles/SettingsContent.styles';
 import { theme } from '../../styles/theme';
 
@@ -14,25 +13,29 @@ interface SettingsRowProps {
   rightContent: React.ReactNode;
 }
 
-const SettingsRow: React.FC<SettingsRowProps> = ({
-  title,
-  leftIcon,
-  rightContent,
-}) => (
-  <View style={styles.row}>
-    <Feather
-      name={leftIcon}
-      size={22}
-      color={theme.colors.secondary}
-      style={styles.icon}
-    />
-    <Text style={styles.rowTitle}>{title}</Text>
-    <View style={styles.rightContent}>{rightContent}</View>
-  </View>
+// Optimizamos el componente de fila con React.memo.
+// Esto es muy efectivo porque cada fila solo se volverá a renderizar si sus
+// props específicas (title, leftIcon, rightContent) cambian.
+const SettingsRow: React.FC<SettingsRowProps> = memo(
+  ({ title, leftIcon, rightContent }) => (
+    <View style={styles.row}>
+      <Feather
+        name={leftIcon}
+        size={22}
+        color={theme.colors.secondary}
+        style={styles.icon}
+      />
+      <Text style={styles.rowTitle}>{title}</Text>
+      <View style={styles.rightContent}>{rightContent}</View>
+    </View>
+  )
 );
 // ---
 
-export default function SettingsContent() {
+// Aunque SettingsContent tiene su propio estado, lo envolvemos en React.memo.
+// Esto lo protege de re-renders innecesarios si su componente padre se
+// actualiza por razones que no le conciernen.
+const SettingsContent = memo(() => {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   return (
@@ -47,7 +50,10 @@ export default function SettingsContent() {
             <Switch
               value={notificationsEnabled}
               onValueChange={setNotificationsEnabled}
-              trackColor={{ false: theme.colors.border, true: theme.colors.accent }}
+              trackColor={{
+                false: theme.colors.border,
+                true: theme.colors.accent,
+              }}
               thumbColor={theme.colors.primary}
             />
           }
@@ -86,6 +92,6 @@ export default function SettingsContent() {
       </View>
     </View>
   );
-}
+});
 
-// 3. ELIMINA todo el bloque 'const styles = StyleSheet.create({...})' de aquí
+export default SettingsContent;

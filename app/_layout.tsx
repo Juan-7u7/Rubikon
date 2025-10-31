@@ -2,18 +2,18 @@
 import { useFonts } from 'expo-font';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native'; // <-- Añadido StatusBar
 import { SafeAreaView } from 'react-native-safe-area-context';
 // Componentes
-import CustomHeader from '../app/components/CustomHeader';
-import LoginContent from '../app/components/LoginContent';
-import RegisterContent from '../app/components/RegisterContent';
-import ReusableModal from '../app/components/ReusableModal';
-import SettingsContent from '../app/components/SettingsContent';
-import UserContent from '../app/components/UserContent';
+import CustomHeader from './components/CustomHeader'; // <-- Ruta Corregida
+import LoginContent from './components/LoginContent'; // <-- Ruta Corregida
+import RegisterContent from './components/RegisterContent'; // <-- Ruta Corregida
+import ReusableModal from './components/ReusableModal'; // <-- Ruta Corregida
+import SettingsContent from './components/SettingsContent'; // <-- Ruta Corregida
+import UserContent from './components/UserContent'; // <-- Ruta Corregida
 // Contextos y Estilos
 import { AlertProvider, useAlert } from '../context/AlertContext';
-import { ModalProvider, useModal } from '../context/ModalContext'; // <--- 1. IMPORTAR
+import { ModalProvider, useModal } from '../context/ModalContext';
 import { theme } from '../styles/theme';
 // Supabase
 import { Session } from '@supabase/supabase-js';
@@ -21,8 +21,10 @@ import { supabase } from '../lib/supabase';
 
 SplashScreen.preventAutoHideAsync();
 
+// Interfaz de Profile (Con avatar_id)
 interface Profile {
   username: string;
+  avatar_id: number;
 }
 
 function RootLayoutContent() {
@@ -33,22 +35,19 @@ function RootLayoutContent() {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
 
-  // 2. OBTENEMOS EL ESTADO Y FUNCIONES DEL HOOK
   const { visibleModal, closeModal } = useModal();
   const { showAlert } = useAlert();
 
-  // 3. ELIMINAMOS el useState de 'visibleModal'
-
   useEffect(() => {
-    // ... (la lógica de useFonts no cambia)
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync();
     }
-    // ... (la lógica de fetchProfile no cambia)
+    
+    // fetchProfile (Con avatar_id)
     const fetchProfile = async (session: Session) => {
        const { data, error } = await supabase
         .from('profiles')
-        .select('username')
+        .select('username, avatar_id') // <-- Pide el avatar
         .eq('id', session.user.id)
         .single();
       if (error) {
@@ -57,14 +56,14 @@ function RootLayoutContent() {
         setProfile(data);
       }
     };
-    // ... (la lógica de getSession no cambia)
+    
+    // Lógica de sesión (sin cambios)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
         fetchProfile(session);
       }
     });
-    // ... (la lógica de onAuthStateChange no cambia)
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -85,67 +84,64 @@ function RootLayoutContent() {
 
   const handleLogout = () => {
     supabase.auth.signOut();
-    closeModal(); // <--- 4. Usamos la función del hook
+    closeModal();
     showAlert('¡Hasta luego!', 'Has cerrado sesión.');
   };
 
-  // 5. ELIMINAMOS openLoginModal y openRegisterModal
-  // (closeModal ya lo tenemos del hook)
-
   return (
     <SafeAreaView style={styles.container}>
-      {/* 6. CustomHeader YA NO NECESITA PROPS 'onPress' */}
+      {/* <StatusBar style="light" /> */}
+
       <CustomHeader
         title="RUBIKON"
         leftIcon="settings"
         rightIcon="user"
       />
 
-      {/* ... (Stack no cambia) ... */}
       <Stack
         screenOptions={{
           headerShown: false,
           contentStyle: {
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.background, // <-- Restaurado
           },
         }}
       />
       
-      {/* 7. Los modales usan 'visibleModal' y 'closeModal' del hook */}
       <ReusableModal
         title="Ajustes"
-        visible={visibleModal === 'settings'} // <-- Del hook
-        onClose={closeModal} // <-- Del hook
+        visible={visibleModal === 'settings'}
+        onClose={closeModal}
       >
         <SettingsContent />
       </ReusableModal>
 
+      {/* UserContent (Con avatar_id) */}
       <ReusableModal
         title={session ? 'Perfil de Jugador' : 'Bienvenido'}
-        visible={visibleModal === 'user'} // <-- Del hook
-        onClose={closeModal} // <-- Del hook
+        visible={visibleModal === 'user'}
+        onClose={closeModal}
       >
-        {/* 8. UserContent YA NO NECESITA 'onLoginPress' ni 'onRegisterPress' */}
         <UserContent
           isLoggedIn={!!session}
           username={profile?.username}
           email={session?.user?.email}
-          onLogoutPress={handleLogout} // <-- Esta sí la pasamos
+          avatar_id={profile?.avatar_id} // <-- Pasando el prop
+          onLogoutPress={handleLogout}
         />
       </ReusableModal>
 
       <ReusableModal
         title="Iniciar Sesión"
-        visible={visibleModal === 'login'} // <-- Del hook
-        onClose={closeModal} // <-- Del hook
+        visible={visibleModal === 'login'}
+        onClose={closeModal}
       >
         <LoginContent onLoginSuccess={closeModal} />
       </ReusableModal>
 
       <ReusableModal
         title="Crear Cuenta"
-        visible={visibleModal === 'register'} // <-- Del hook
-        onClose={closeModal} // <-- Del hook
+        visible={visibleModal === 'register'}
+        onClose={closeModal}
       >
         <RegisterContent onRegisterSuccess={closeModal} />
       </ReusableModal>
@@ -153,7 +149,7 @@ function RootLayoutContent() {
   );
 }
 
-// 9. Envolvemos la app en AMBOS proveedores
+// Proveedores (Sin cambios)
 export default function RootLayout() {
   return (
     <AlertProvider>

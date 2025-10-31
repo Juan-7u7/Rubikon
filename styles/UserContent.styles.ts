@@ -86,4 +86,15 @@ export const styles = StyleSheet.create({
   secondaryButtonText: {
     color: theme.colors.primary,
   },
+  // ... (tus otros estilos)
+  
+  // 👇 AÑADE ESTE BLOQUE DE CÓDIGO 👇
+  avatarImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: theme.colors.border,
+  },
+  // 👆 AÑADE ESTE BLOQUE DE CÓDIGO 👆
+
 });
