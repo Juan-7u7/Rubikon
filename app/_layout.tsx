@@ -88,6 +88,15 @@ function RootLayoutContent() {
     showAlert('¡Hasta luego!', 'Has cerrado sesión.');
   };
 
+  const handleProfileUpdate = (newUsername: string, newAvatarId: number) => {
+    setProfile((prevProfile) => {
+      if (prevProfile) {
+        return { ...prevProfile, username: newUsername, avatar_id: newAvatarId };
+      }
+      return null;
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* <StatusBar style="light" /> */}
@@ -127,6 +136,7 @@ function RootLayoutContent() {
           email={session?.user?.email}
           avatar_id={profile?.avatar_id} // <-- Pasando el prop
           onLogoutPress={handleLogout}
+          onProfileUpdate={handleProfileUpdate} // <-- Pasar el callback
         />
       </ReusableModal>
 
