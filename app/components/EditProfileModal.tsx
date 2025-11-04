@@ -3,20 +3,18 @@
 import { Feather } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  Animated,
-  Image,
-  Modal,
-  Pressable,
-  ScrollView, // <-- 1. Importar ScrollView
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Animated,
+    Image,
+    Modal,
+    Pressable,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity
 } from 'react-native';
 import { styles } from '../../styles/EditProfileModal.styles';
 import { theme } from '../../styles/theme';
 
-// Importamos el mapa de avatares para poder iterarlo
 const avatarMap: { [key: number]: any } = {
   1: require('../../assets/images/avatars/avatar1.png'),
   2: require('../../assets/images/avatars/avatar2.png'),
@@ -28,8 +26,8 @@ interface EditProfileModalProps {
   visible: boolean;
   onClose: () => void;
   username: string;
-  avatarId: number; // <-- 2. Cambiado de avatarUrl a avatarId
-  onSave: (newUsername: string, newAvatarId: number) => void; // <-- 2.
+  avatarId: number;
+  onSave: (newUsername: string, newAvatarId: number) => void;
 }
 
 const EditProfileModal = ({
@@ -40,16 +38,16 @@ const EditProfileModal = ({
   onSave,
 }: EditProfileModalProps) => {
   const [newUsername, setNewUsername] = useState(username);
-  const [newAvatarId, setNewAvatarId] = useState(avatarId); // <-- 3. Estado para el ID
+  const [newAvatarId, setNewAvatarId] = useState(avatarId);
   const scaleAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (visible) {
       setNewUsername(username);
-      setNewAvatarId(avatarId); // <-- 4. Actualizar el ID del avatar
+      setNewAvatarId(avatarId);
       Animated.spring(scaleAnim, {
         toValue: 1,
-        friction: 5,
+        friction: 6, // Un poco más de rebote
         useNativeDriver: true,
       }).start();
     } else {
@@ -58,7 +56,7 @@ const EditProfileModal = ({
   }, [visible, username, avatarId, scaleAnim]);
 
   const handleSave = () => {
-    onSave(newUsername, newAvatarId); // <-- 5. Guardar el ID
+    onSave(newUsername, newAvatarId);
     onClose();
   };
 
@@ -81,60 +79,64 @@ const EditProfileModal = ({
               { transform: [{ scale: scaleAnim }] },
             ]}
           >
-            <ScrollView style={{ width: '100%' }}>
-              <View style={{ alignItems: 'center', width: '100%' }}>
-                <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                  <Feather
-                    name="x"
-                    size={theme.iconSizes.medium}
-                    color={theme.colors.primary}
-                  />
-                </TouchableOpacity>
-
-                <View style={styles.avatarContainer}>
-                  <Image
-                    source={avatarMap[newAvatarId]} // Usar el ID para mostrar el avatar
-                    style={styles.avatar}
-                  />
-                </View>
-
-                {/* --- 6. Grid de Avatares --- */}
-                <View style={styles.avatarGrid}>
-                  {Object.keys(avatarMap).map((key) => {
-                    const id = Number(key);
-                    return (
-                      <TouchableOpacity
-                        key={id}
-                        style={styles.avatarOption}
-                        onPress={() => setNewAvatarId(id)}
-                      >
-                        <Image
-                          source={avatarMap[id]}
-                          style={[
-                            styles.avatar,
-                            { width: 60, height: 60, borderRadius: 30 }, // Tamaño más pequeño
-                            newAvatarId === id && styles.selectedAvatar, // Estilo si está seleccionado
-                          ]}
-                        />
-                      </TouchableOpacity>
-                    );
-                  })}
-                </View>
-
-                <TextInput
-                  style={styles.usernameInput}
-                  value={newUsername}
-                  onChangeText={setNewUsername}
-                  placeholder="Nombre de usuario"
+            <ScrollView contentContainerStyle={styles.contentContainer}>
+              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                <Feather
+                  name="x-circle"
+                  size={theme.iconSizes.large} // Icono más grande
+                  color={theme.colors.secondary}
                 />
+              </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.saveButton}
-                  onPress={handleSave}
-                >
-                  <Text style={styles.saveButtonText}>Guardar</Text>
-                </TouchableOpacity>
-              </View>
+              <Text style={styles.title}>Editar Perfil</Text>
+
+              <Text style={styles.sectionLabel}>Avatar actual</Text>
+              <Image
+                source={avatarMap[newAvatarId]}
+                style={styles.avatar}
+              />
+
+              <Text style={styles.sectionLabel}>Escoge tu nuevo avatar</Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={styles.avatarScrollView}
+              >
+                {Object.keys(avatarMap).map((key) => {
+                  const id = Number(key);
+                  return (
+                    <TouchableOpacity
+                      key={id}
+                      style={styles.avatarOption}
+                      onPress={() => setNewAvatarId(id)}
+                    >
+                      <Image
+                        source={avatarMap[id]}
+                        style={[
+                          styles.avatarPreview,
+                          newAvatarId === id && styles.selectedAvatar,
+                        ]}
+                      />
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+
+              <Text style={styles.sectionLabel}>Nombre de usuario</Text>
+              <TextInput
+                style={styles.usernameInput}
+                value={newUsername}
+                onChangeText={setNewUsername}
+                placeholder="Ingresa tu nombre de usuario"
+                placeholderTextColor={theme.colors.secondary}
+              />
+
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={handleSave}
+              >
+                <Text style={styles.saveButtonText}>Guardar</Text>
+              </TouchableOpacity>
             </ScrollView>
           </Animated.View>
         </Pressable>
