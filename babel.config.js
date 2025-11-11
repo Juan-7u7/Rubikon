@@ -4,7 +4,8 @@ module.exports = function(api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
-      // 'react-native-reanimated/plugin', <-- ELIMINA ESTA LÍNEA
+      // Esta línea es OBLIGATORIA para que 'drei' y las animaciones 3D funcionen
+      'react-native-reanimated/plugin', 
     ],
   };
 };

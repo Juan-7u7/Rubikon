@@ -6,6 +6,7 @@
     
     // "paths" SE HA ELIMINADO DE AQUÍ
 
+    "types": [],
     "esModuleInterop": true,
     "importHelpers": true
   },
@@ -13,6 +14,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "expo-router/types"
   ]
 }
