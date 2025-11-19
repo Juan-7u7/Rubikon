@@ -1,12 +1,12 @@
 // app/index.tsx
 
-"use client"; // <--- ¡ESTA ES LA SOLUCIÓN ALTERNATIVA!
+"use client"; // Directiva para asegurar que este componente se renderice en el cliente
 
-import { Suspense } from 'react'; // <--- Suspense sigue siendo una buena idea
+import { Suspense } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { theme } from '../styles/theme';
 
-// 2. Vuelve a usar un import normal
+// Importación del componente que visualiza el modelo 3D
 import ModelViewer from './components/ModelViewer';
 
 export default function HomeScreen() {
@@ -14,11 +14,14 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Bienvenido a RUBIKON</Text>
 
+      {/* Contenedor del modelo 3D */}
       <View style={styles.modelContainer}>
-        {/* 3. Usamos Suspense para mostrar un 'fallback' 
-            mientras el modelo 3D (que es pesado) carga. 
-        */}
-        <Suspense fallback={<View style={styles.loadingContainer}><Text style={styles.subtitle}>Cargando modelo 3D...</Text></View>}>
+        {/* Suspense muestra un fallback mientras carga el componente pesado (ModelViewer) */}
+        <Suspense fallback={
+          <View style={styles.loadingContainer}>
+            <Text style={styles.subtitle}>Cargando modelo 3D...</Text>
+          </View>
+        }>
           <ModelViewer />
         </Suspense>
       </View>
@@ -30,6 +33,7 @@ export default function HomeScreen() {
   );
 }
 
+// Estilos para la pantalla principal
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -40,7 +44,7 @@ const styles = StyleSheet.create({
   },
   modelContainer: {
     width: '100%',
-    flex: 1,
+    flex: 1, // Ocupa el espacio disponible restante
     backgroundColor: theme.colors.border,
     borderRadius: theme.borderRadius.medium,
     overflow: 'hidden',
