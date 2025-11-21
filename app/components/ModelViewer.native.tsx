@@ -1,43 +1,39 @@
 // app/components/ModelViewer.native.tsx
-// Este archivo SÓLO se usará en Android y iOS
-
-import React from 'react';
+import { OrbitControls, useGLTF } from '@react-three/drei/native';
+import { Canvas } from '@react-three/fiber/native';
+import React, { Suspense, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { WebView } from 'react-native-webview';
-import { theme } from '../../styles/theme';
 
-// 1. La URL de tu modelo en Supabase
-const modelUrl = "https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb";
+const modelPath = "https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb";
 
-// 2. --- ¡AQUÍ ESTÁ LA MODIFICACIÓN! ---
-// Añadimos los parámetros para ocultar la interfaz del visor
-const params = '&ui=none&grid=false&bg=transparent';
-
-const viewerUrl = `https://gltf-viewer.donmccurdy.com/#model=${encodeURIComponent(modelUrl)}${params}`;
-// --- FIN DE LA MODIFICACIÓN ---
+function Model() {
+  const { scene } = useGLTF(modelPath); 
+  return <primitive object={scene} />;
+}
 
 export default function ModelViewer() {
+  
+  useEffect(() => {
+    useGLTF.preload(modelPath);
+  }, []);
+
   return (
     <View style={styles.container}>
-      <WebView
-        source={{ uri: viewerUrl }}
-        style={styles.webview}
-        startInLoadingState={true}
-        // El fondo del contenedor se mostrará gracias a '&bg=transparent'
-        containerStyle={{ backgroundColor: theme.colors.border }}
-      />
+      <Canvas>
+        <Suspense fallback={null}>
+          <ambientLight intensity={Math.PI / 2} />
+          <directionalLight position={[10, 10, 5]} intensity={2} />
+          <Model />
+          <OrbitControls />
+        </Suspense>
+      </Canvas>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    overflow: 'hidden',
-  },
-  webview: {
-    flex: 1,
+    flex: 1, 
     backgroundColor: 'transparent',
   },
 });
