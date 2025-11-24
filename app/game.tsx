@@ -1,14 +1,15 @@
-// app/index.tsx
-// Pantalla principal con juego 3D para WEB
+// app/game.tsx
+// Pantalla del juego de exploración 3D
 
 "use client";
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import GameMap3D from './components/GameMap3D';
 import Joystick from './components/Joystick';
 
-export default function HomeScreen() {
+export default function GameScreen() {
   // Estado del joystick
   const [joystickX, setJoystickX] = useState(0);
   const [joystickY, setJoystickY] = useState(0);
@@ -20,7 +21,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView style={styles.container}>
       {/* Escena 3D del juego */}
       <GameMap3D joystickX={joystickX} joystickY={joystickY} />
 
@@ -28,7 +29,7 @@ export default function HomeScreen() {
       <View style={styles.joystickContainer}>
         <Joystick onMove={handleJoystickMove} size={120} />
       </View>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 

@@ -34,6 +34,11 @@ interface UserContentProps {
 
 // `memo` evita que este componente se vuelva a renderizar si sus props no cambian.
 // Es una optimización importante para componentes puramente visuales.
+/**
+ * Componente GuestView
+ * Muestra la vista para usuarios no autenticados (invitados).
+ * Ofrece las opciones para iniciar sesión o registrarse, actuando como punto de entrada al flujo de autenticación.
+ */
 const GuestView = memo(() => {
   const { openModal } = useModal();
   return (
@@ -52,6 +57,7 @@ const GuestView = memo(() => {
         </View>
       </View>
       <View style={styles.guestActionsContainer}>
+        {/* Botón para abrir el modal de Login */}
         <TouchableOpacity
           style={[styles.guestButton, styles.primaryButton]}
           onPress={() => openModal('login')}
@@ -66,6 +72,8 @@ const GuestView = memo(() => {
             Iniciar Sesión
           </Text>
         </TouchableOpacity>
+        
+        {/* Botón para abrir el modal de Registro */}
         <TouchableOpacity
           style={[styles.guestButton, styles.secondaryButton]}
           onPress={() => openModal('register')}

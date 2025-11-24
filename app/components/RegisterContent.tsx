@@ -1,22 +1,33 @@
 // app/components/RegisterContent.tsx
-// Importamos 'memo' de React para la optimización.
+
+/**
+ * Componente RegisterContent
+ * Este componente maneja el formulario de registro de nuevos usuarios.
+ * Incluye la selección de un avatar predefinido y la creación de la cuenta en Supabase.
+ */
+
+// Importamos 'memo' de React para optimización y 'useState' para el manejo del estado local.
 import React, { memo, useState } from 'react';
 import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
+// Importamos el contexto de alertas para mostrar mensajes al usuario.
 import { useAlert } from '../../context/AlertContext';
+// Importamos el cliente de Supabase.
 import { supabase } from '../../lib/supabase';
+// Importamos estilos compartidos y el tema.
 import { formStyles } from '../../styles/Form.styles';
 import { theme } from '../../styles/theme';
 
 // --- 👇 AQUÍ ESTÁ LA CORRECCIÓN 👇 ---
-// Le decimos a TypeScript que 'avatarMap' puede ser indexado por un 'number'
+// Mapa de avatares disponibles.
+// Le decimos a TypeScript que 'avatarMap' puede ser indexado por un 'number'.
 const avatarMap: { [key: number]: any } = {
   1: require('../../assets/images/avatars/avatar1.png'),
   2: require('../../assets/images/avatars/avatar2.png'),
@@ -25,8 +36,12 @@ const avatarMap: { [key: number]: any } = {
 };
 // --- 👆 FIN DE LA CORRECCIÓN 👆 ---
 
-const avatars = [1, 2, 3, 4]; // Para el .map
+const avatars = [1, 2, 3, 4]; // Array de IDs para iterar y renderizar los avatares.
 
+/**
+ * Props del componente RegisterContent
+ * @property onRegisterSuccess - Callback ejecutado tras un registro exitoso.
+ */
 interface RegisterContentProps {
   onRegisterSuccess: () => void;
 }
@@ -36,40 +51,55 @@ interface RegisterContentProps {
 // el componente padre se actualiza pero las props de RegisterContent no cambian.
 const RegisterContent = memo(({ onRegisterSuccess }: RegisterContentProps) => {
   const { showAlert } = useAlert();
+  
+  // Estados para los campos del formulario
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState(1); // Avatar seleccionado por defecto (ID 1)
+  const [loading, setLoading] = useState(false); // Estado de carga
 
+  /**
+   * Maneja el proceso de registro
+   * 1. Valida que todos los campos estén completos.
+   * 2. Llama a Supabase para crear el usuario.
+   * 3. Guarda metadatos adicionales (username, avatar_id) en la cuenta del usuario.
+   * 4. Muestra alertas de éxito o error.
+   */
   const handleRegister = async () => {
+    // Validación básica de campos vacíos
     if (!email || !password || !username) {
       showAlert('Error', 'Por favor, completa todos los campos.');
       return;
     }
-    setLoading(true);
+    setLoading(true); // Iniciar carga
 
+    // Crear usuario en Supabase
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
       options: {
+        // Datos adicionales que se guardarán en la tabla de perfiles (si está configurada)
+        // o en los metadatos del usuario.
         data: {
-          username: username.toLowerCase(),
+          username: username.toLowerCase(), // Guardamos el username en minúsculas
           avatar_id: selectedAvatar,
         },
       },
     });
 
     if (error) {
+      // Mostrar error si falla el registro
       showAlert('Error en el Registro', error.message);
     } else {
+      // Mostrar éxito y ejecutar callback
       showAlert(
         '¡Revisa tu correo!',
         'Te hemos enviado un enlace de confirmación para activar tu cuenta.'
       );
       onRegisterSuccess();
     }
-    setLoading(false);
+    setLoading(false); // Finalizar carga
   };
 
   return (
@@ -82,15 +112,16 @@ const RegisterContent = memo(({ onRegisterSuccess }: RegisterContentProps) => {
             onPress={() => setSelectedAvatar(avatarId)}
             style={[
               styles.avatarPressable,
-              selectedAvatar === avatarId && styles.avatarSelected,
+              selectedAvatar === avatarId && styles.avatarSelected, // Estilo condicional si está seleccionado
             ]}
           >
-            {/* Ahora TypeScript entiende esto: */}
+            {/* Renderiza la imagen del avatar desde el mapa */}
             <Image source={avatarMap[avatarId]} style={styles.avatarImage} />
           </Pressable>
         ))}
       </View>
 
+      {/* Campo para el nombre de usuario */}
       <TextInput
         style={formStyles.input}
         placeholder="Nombre de jugador (username)"
@@ -99,6 +130,8 @@ const RegisterContent = memo(({ onRegisterSuccess }: RegisterContentProps) => {
         placeholderTextColor={theme.colors.secondary}
         autoCapitalize="none"
       />
+      
+      {/* Campo para el email */}
       <TextInput
         style={formStyles.input}
         placeholder="Email"
@@ -108,14 +141,18 @@ const RegisterContent = memo(({ onRegisterSuccess }: RegisterContentProps) => {
         keyboardType="email-address"
         autoCapitalize="none"
       />
+      
+      {/* Campo para la contraseña */}
       <TextInput
         style={formStyles.input}
         placeholder="Contraseña"
         value={password}
         onChangeText={setPassword}
         placeholderTextColor={theme.colors.secondary}
-        secureTextEntry
+        secureTextEntry // Oculta la contraseña
       />
+      
+      {/* Botón de registro */}
       <TouchableOpacity
         style={[formStyles.button, loading && formStyles.buttonDisabled]}
         onPress={handleRegister}

@@ -42,4 +42,10 @@ export const styles = StyleSheet.create({
   iconButton: {
     padding: 8, // Área táctil más grande
   },
+
+  // Botón del juego (centrado debajo del título)
+  gameButton: {
+    marginTop: 4,
+    padding: 4,
+  },
 });
