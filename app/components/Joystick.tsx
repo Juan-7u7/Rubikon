@@ -1,5 +1,5 @@
 // app/components/Joystick.tsx
-// Componente de joystick virtual para controlar el movimiento del personaje
+// Joystick virtual con diseño minimalista y moderno
 
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -11,48 +11,40 @@ import Animated, {
 } from 'react-native-reanimated';
 
 interface JoystickProps {
-  onMove: (x: number, y: number) => void; // Valores normalizados entre -1 y 1
-  size?: number; // Tamaño del joystick
+  onMove: (x: number, y: number) => void;
+  size?: number;
 }
 
-export default function Joystick({ onMove, size = 120 }: JoystickProps) {
-  const knobSize = size * 0.4; // El knob es 40% del tamaño total
-  const maxDistance = (size - knobSize) / 2; // Distancia máxima que puede moverse el knob
+export default function Joystick({ onMove, size = 100 }: JoystickProps) {
+  const knobSize = size * 0.45;
+  const maxDistance = (size - knobSize) / 2;
 
-  // Posición del knob (relativa al centro)
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
 
-  // Gesto de pan para mover el joystick
   const panGesture = Gesture.Pan()
     .onUpdate((event) => {
-      // Calcular la distancia desde el centro
       const distance = Math.sqrt(event.translationX ** 2 + event.translationY ** 2);
       
       if (distance <= maxDistance) {
-        // Si está dentro del límite, mover libremente
         translateX.value = event.translationX;
         translateY.value = event.translationY;
       } else {
-        // Si está fuera del límite, limitar al borde del círculo
         const angle = Math.atan2(event.translationY, event.translationX);
         translateX.value = Math.cos(angle) * maxDistance;
         translateY.value = Math.sin(angle) * maxDistance;
       }
 
-      // Normalizar valores entre -1 y 1 y enviar al callback
       const normalizedX = translateX.value / maxDistance;
       const normalizedY = translateY.value / maxDistance;
       onMove(normalizedX, normalizedY);
     })
     .onEnd(() => {
-      // Volver al centro con animación
-      translateX.value = withSpring(0);
-      translateY.value = withSpring(0);
+      translateX.value = withSpring(0, { damping: 15, stiffness: 150 });
+      translateY.value = withSpring(0, { damping: 15, stiffness: 150 });
       onMove(0, 0);
     });
 
-  // Estilo animado para el knob
   const knobStyle = useAnimatedStyle(() => ({
     transform: [
       { translateX: translateX.value },
@@ -62,10 +54,17 @@ export default function Joystick({ onMove, size = 120 }: JoystickProps) {
 
   return (
     <View style={[styles.container, { width: size, height: size }]}>
-      {/* Base del joystick */}
-      <View style={[styles.base, { width: size, height: size, borderRadius: size / 2 }]} />
+      {/* Base del joystick - Glassmorphism */}
+      <View style={[styles.base, { width: size, height: size, borderRadius: size / 2 }]}>
+        {/* Anillo interior decorativo */}
+        <View style={[styles.innerRing, { 
+          width: size * 0.7, 
+          height: size * 0.7, 
+          borderRadius: (size * 0.7) / 2 
+        }]} />
+      </View>
       
-      {/* Knob del joystick (la parte que se mueve) */}
+      {/* Knob del joystick */}
       <GestureDetector gesture={panGesture}>
         <Animated.View
           style={[
@@ -77,7 +76,14 @@ export default function Joystick({ onMove, size = 120 }: JoystickProps) {
             },
             knobStyle,
           ]}
-        />
+        >
+          {/* Centro del knob */}
+          <View style={[styles.knobCenter, {
+            width: knobSize * 0.4,
+            height: knobSize * 0.4,
+            borderRadius: (knobSize * 0.4) / 2,
+          }]} />
+        </Animated.View>
       </GestureDetector>
     </View>
   );
@@ -90,18 +96,40 @@ const styles = StyleSheet.create({
   },
   base: {
     position: 'absolute',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    // Glassmorphism effect
+    backdropFilter: 'blur(10px)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  innerRing: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: '-50%' }, { translateY: '-50%' }],
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderStyle: 'dashed',
   },
   knob: {
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    backgroundColor: 'rgba(74, 158, 255, 0.9)',
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.8)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // Glow effect
+    shadowColor: '#4a9eff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  knobCenter: {
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
   },
 });

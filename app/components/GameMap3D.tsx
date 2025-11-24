@@ -1,5 +1,5 @@
 // app/components/GameMap3D.tsx
-// Escena 3D del juego para WEB usando Three.js directamente
+// Escena 3D minimalista y estética
 
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -23,96 +23,125 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Crear escena
+    // Crear escena con gradiente de fondo
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
+    scene.background = new THREE.Color(0x0a0a0a);
+    scene.fog = new THREE.Fog(0x0a0a0a, 10, 50); // Niebla para profundidad
     sceneRef.current = scene;
 
-    // Crear cámara
+    // Cámara
     const camera = new THREE.PerspectiveCamera(
       60,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
     );
-    camera.position.set(0, 5, 8);
+    camera.position.set(0, 6, 10);
     cameraRef.current = camera;
 
-    // Crear renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    // Renderer con antialiasing
+    const renderer = new THREE.WebGLRenderer({ 
+      antialias: true,
+      alpha: true,
+    });
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Optimización
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Sombras suaves
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Iluminación
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    // Iluminación mejorada y minimalista
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    directionalLight.position.set(10, 10, 5);
-    directionalLight.castShadow = true;
-    scene.add(directionalLight);
+    const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    mainLight.position.set(5, 10, 7);
+    mainLight.castShadow = true;
+    mainLight.shadow.mapSize.width = 2048;
+    mainLight.shadow.mapSize.height = 2048;
+    mainLight.shadow.camera.near = 0.5;
+    mainLight.shadow.camera.far = 50;
+    scene.add(mainLight);
 
-    // Suelo
-    const floorGeometry = new THREE.PlaneGeometry(50, 50);
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2a2a });
+    // Luz de relleno suave
+    const fillLight = new THREE.DirectionalLight(0x4a9eff, 0.3);
+    fillLight.position.set(-5, 3, -5);
+    scene.add(fillLight);
+
+    // Suelo minimalista con gradiente
+    const floorGeometry = new THREE.CircleGeometry(25, 64);
+    const floorMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0x1a1a1a,
+      roughness: 0.8,
+      metalness: 0.2,
+    });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.y = -0.1;
+    floor.position.y = -0.01;
     floor.receiveShadow = true;
     scene.add(floor);
 
-    // Grid
-    const gridHelper = new THREE.GridHelper(50, 50, 0x444444, 0x222222);
+    // Grid minimalista y sutil
+    const gridHelper = new THREE.GridHelper(30, 30, 0x2a2a2a, 0x1a1a1a);
+    gridHelper.material.opacity = 0.3;
+    gridHelper.material.transparent = true;
     scene.add(gridHelper);
 
-    // Crear personaje
+    // Crear personaje minimalista
     const character = new THREE.Group();
     
-    // Cuerpo
-    const bodyGeometry = new THREE.CylinderGeometry(0.3, 0.3, 1, 16);
-    const bodyMaterial = new THREE.MeshStandardMaterial({ color: 0x4a9eff });
-    const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-    body.position.y = 0.5;
+    // Material del personaje con efecto suave
+    const characterMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0x4a9eff,
+      roughness: 0.3,
+      metalness: 0.1,
+      emissive: 0x4a9eff,
+      emissiveIntensity: 0.1,
+    });
+
+    // Cuerpo principal - cápsula suave
+    const bodyGeometry = new THREE.CapsuleGeometry(0.25, 0.8, 16, 32);
+    const body = new THREE.Mesh(bodyGeometry, characterMaterial);
+    body.position.y = 0.9;
     body.castShadow = true;
     character.add(body);
 
-    // Cabeza
-    const headGeometry = new THREE.SphereGeometry(0.35, 16, 16);
-    const head = new THREE.Mesh(headGeometry, bodyMaterial);
-    head.position.y = 1.2;
+    // Cabeza - esfera suave
+    const headGeometry = new THREE.SphereGeometry(0.3, 32, 32);
+    const head = new THREE.Mesh(headGeometry, characterMaterial);
+    head.position.y = 1.5;
     head.castShadow = true;
     character.add(head);
 
-    // Base
-    const baseGeometry = new THREE.SphereGeometry(0.3, 16, 16);
-    const base = new THREE.Mesh(baseGeometry, bodyMaterial);
-    base.position.y = 0.3;
-    base.castShadow = true;
-    character.add(base);
-
-    // Ojos
-    const eyeGeometry = new THREE.SphereGeometry(0.08, 8, 8);
-    const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    // Ojos minimalistas
+    const eyeMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0xffffff,
+      emissive: 0xffffff,
+      emissiveIntensity: 0.5,
+    });
+    const eyeGeometry = new THREE.SphereGeometry(0.06, 16, 16);
+    
     const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-    leftEye.position.set(0.15, 1.3, 0.25);
+    leftEye.position.set(0.12, 1.55, 0.22);
     character.add(leftEye);
 
     const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-    rightEye.position.set(-0.15, 1.3, 0.25);
+    rightEye.position.set(-0.12, 1.55, 0.22);
     character.add(rightEye);
 
-    // Pupilas
-    const pupilGeometry = new THREE.SphereGeometry(0.04, 8, 8);
-    const pupilMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
-    const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
-    leftPupil.position.set(0.15, 1.3, 0.32);
-    character.add(leftPupil);
-
-    const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
-    rightPupil.position.set(-0.15, 1.3, 0.32);
-    character.add(rightPupil);
+    // Sombra suave debajo del personaje
+    const shadowGeometry = new THREE.CircleGeometry(0.35, 32);
+    const shadowMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0x000000, 
+      opacity: 0.2, 
+      transparent: true,
+      depthWrite: false,
+    });
+    const shadow = new THREE.Mesh(shadowGeometry, shadowMaterial);
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.y = 0.02;
+    character.add(shadow);
 
     scene.add(character);
     characterRef.current = character;
@@ -123,6 +152,12 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
       'https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb',
       (gltf) => {
         gltf.scene.scale.set(2, 2, 2);
+        gltf.scene.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
         scene.add(gltf.scene);
       },
       undefined,
@@ -131,30 +166,40 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
       }
     );
 
-    // Animación
+    // Animación suave
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Actualizar posición del personaje
       if (characterRef.current) {
-        currentPositionRef.current.lerp(targetPositionRef.current, 0.1);
+        // Movimiento suave del personaje
+        currentPositionRef.current.lerp(targetPositionRef.current, 0.08);
         characterRef.current.position.copy(currentPositionRef.current);
 
-        // Rotar hacia la dirección del movimiento
+        // Rotación suave hacia la dirección
         const direction = new THREE.Vector3().subVectors(
           targetPositionRef.current,
           currentPositionRef.current
         );
         if (direction.length() > 0.01) {
-          const angle = Math.atan2(direction.x, direction.z);
-          characterRef.current.rotation.y = angle;
+          const targetAngle = Math.atan2(direction.x, direction.z);
+          const currentAngle = characterRef.current.rotation.y;
+          let angleDiff = targetAngle - currentAngle;
+          
+          // Normalizar el ángulo
+          while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+          while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+          
+          characterRef.current.rotation.y += angleDiff * 0.1;
         }
 
-        // Cámara sigue al personaje
-        const offset = new THREE.Vector3(0, 5, 8);
-        const cameraPosition = currentPositionRef.current.clone().add(offset);
-        camera.position.lerp(cameraPosition, 0.1);
-        camera.lookAt(currentPositionRef.current);
+        // Cámara sigue suavemente
+        const offset = new THREE.Vector3(0, 6, 10);
+        const cameraTarget = currentPositionRef.current.clone().add(offset);
+        camera.position.lerp(cameraTarget, 0.05);
+        
+        const lookAtTarget = currentPositionRef.current.clone();
+        lookAtTarget.y += 1;
+        camera.lookAt(lookAtTarget);
       }
 
       renderer.render(scene, camera);
@@ -165,9 +210,12 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
     // Manejar resize
     const handleResize = () => {
       if (!containerRef.current) return;
-      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+      const width = containerRef.current.clientWidth;
+      const height = containerRef.current.clientHeight;
+      
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
-      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+      renderer.setSize(width, height);
     };
 
     window.addEventListener('resize', handleResize);
@@ -182,15 +230,15 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
     };
   }, []);
 
-  // Actualizar posición objetivo basándose en el joystick
+  // Actualizar posición con el joystick
   useEffect(() => {
-    const moveSpeed = 0.1;
+    const moveSpeed = 0.12;
     const interval = setInterval(() => {
       if (joystickX !== 0 || joystickY !== 0) {
         const newX = targetPositionRef.current.x + joystickX * moveSpeed;
         const newZ = targetPositionRef.current.z - joystickY * moveSpeed;
 
-        const maxDistance = 10;
+        const maxDistance = 12;
         const clampedX = Math.max(-maxDistance, Math.min(maxDistance, newX));
         const clampedZ = Math.max(-maxDistance, Math.min(maxDistance, newZ));
 
@@ -203,7 +251,16 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
   return (
     <View style={styles.container}>
-      <div ref={containerRef as any} style={{ width: '100%', height: '100%' }} />
+      <div 
+        ref={containerRef as any} 
+        style={{ 
+          width: '100%', 
+          height: '100%',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+        }} 
+      />
     </View>
   );
 }
@@ -211,6 +268,9 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#0a0a0a',
+    overflow: 'hidden',
   },
 });

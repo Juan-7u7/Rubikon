@@ -1,5 +1,5 @@
 // app/index.tsx
-// Pantalla principal con juego 3D para WEB
+// Pantalla principal con juego 3D - Diseño minimalista y estético
 
 "use client";
 
@@ -9,11 +9,9 @@ import GameMap3D from './components/GameMap3D';
 import Joystick from './components/Joystick';
 
 export default function HomeScreen() {
-  // Estado del joystick
   const [joystickX, setJoystickX] = useState(0);
   const [joystickY, setJoystickY] = useState(0);
 
-  // Callback cuando el joystick se mueve
   const handleJoystickMove = (x: number, y: number) => {
     setJoystickX(x);
     setJoystickY(y);
@@ -22,11 +20,13 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       {/* Escena 3D del juego */}
-      <GameMap3D joystickX={joystickX} joystickY={joystickY} />
+      <View style={styles.gameContainer}>
+        <GameMap3D joystickX={joystickX} joystickY={joystickY} />
+      </View>
 
-      {/* Joystick posicionado en la esquina inferior izquierda */}
+      {/* Joystick con diseño mejorado */}
       <View style={styles.joystickContainer}>
-        <Joystick onMove={handleJoystickMove} size={120} />
+        <Joystick onMove={handleJoystickMove} size={100} />
       </View>
     </View>
   );
@@ -35,12 +35,24 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#0a0a0a',
+    overflow: 'hidden', // Prevenir scroll
+  },
+  gameContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
   },
   joystickContainer: {
     position: 'absolute',
-    bottom: 40,
-    left: 40,
-    zIndex: 10,
+    bottom: 30,
+    left: 30,
+    zIndex: 100,
   },
 });
