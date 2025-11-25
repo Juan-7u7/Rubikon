@@ -28,21 +28,21 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
   const isDragging = useRef(false);
   const lastMousePos = useRef({ x: 0, y: 0 });
   
-  // Para gestos táctiles
+  // Estados para gestos táctiles (móvil)
   const lastTouchDistance = useRef(0);
   const touchStartPos = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Crear escena
+    // ===== CONFIGURACIÓN DE ESCENA 3D =====
     const scene = new THREE.Scene();
     // Fondo más claro y alegre (azul cielo suave)
     scene.background = new THREE.Color(0x87ceeb);
     scene.fog = new THREE.Fog(0x87ceeb, 30, 80);
     sceneRef.current = scene;
 
-    // Cámara
+    // ===== CÁMARA =====
     const camera = new THREE.PerspectiveCamera(
       60,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
@@ -52,7 +52,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
     camera.position.set(0, 6, 10);
     cameraRef.current = camera;
 
-    // Renderer
+    // ===== RENDERER =====
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true,
       alpha: true,
@@ -64,7 +64,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Iluminación mejorada y más alegre
+    // ===== ILUMINACIÓN =====
     // Luz ambiental más brillante
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
     scene.add(ambientLight);
@@ -93,7 +93,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
     const hemiLight = new THREE.HemisphereLight(0x87ceeb, 0x90ee90, 0.6);
     scene.add(hemiLight);
 
-    // Suelo circular
+    // ===== SUELO Y GRID =====
     const floorGeometry = new THREE.CircleGeometry(25, 64);
     const floorMaterial = new THREE.MeshStandardMaterial({ 
       color: 0x90ee90, // Verde pasto claro

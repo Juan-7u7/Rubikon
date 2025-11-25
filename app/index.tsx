@@ -9,18 +9,24 @@ import GameMap3D from './components/GameMap3D';
 import Joystick from './components/Joystick';
 
 export default function HomeScreen() {
+  // Estado del movimiento del personaje (-1 a 1 en cada eje)
   const [joystickX, setJoystickX] = useState(0);
   const [joystickY, setJoystickY] = useState(0);
+  // Detecta si el usuario está en móvil/tablet
   const [isMobile, setIsMobile] = useState(false);
 
   // Detectar si es dispositivo móvil o tablet
   useEffect(() => {
     const checkIfMobile = () => {
+      // Verificar si tiene pantalla táctil
       const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      // Verificar tamaño de pantalla (tablets y móviles)
       const isSmallScreen = window.innerWidth <= 1024;
+      // Verificar user agent del navegador
       const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
       const isMobileUA = mobileRegex.test(navigator.userAgent);
       
+      // Es móvil si cumple touch + pantalla pequeña O es detectado por user agent
       setIsMobile((isTouchDevice && isSmallScreen) || isMobileUA);
     };
 
@@ -32,8 +38,10 @@ export default function HomeScreen() {
 
   // Controles de teclado para desktop
   useEffect(() => {
+    // Solo activar controles de teclado en desktop
     if (isMobile) return;
 
+    // Objeto para rastrear qué teclas están presionadas
     const keyState: { [key: string]: boolean } = {};
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -56,7 +64,7 @@ export default function HomeScreen() {
       if (keyState['a'] || keyState['arrowleft']) x = -1;
       if (keyState['d'] || keyState['arrowright']) x = 1;
 
-      // Normalizar diagonal
+      // Normalizar movimiento diagonal para que no sea más rápido
       if (x !== 0 && y !== 0) {
         const length = Math.sqrt(x * x + y * y);
         x /= length;
@@ -76,10 +84,11 @@ export default function HomeScreen() {
     };
   }, [isMobile]);
 
+  // Callback cuando el joystick se mueve
   const handleJoystickMove = (x: number, y: number) => {
-    // Invertir el eje Y del joystick también
     setJoystickX(x);
-    setJoystickY(-y); // Invertido
+    // Invertir Y para que arriba sea adelante
+    setJoystickY(-y);
   };
 
   return (
