@@ -29,7 +29,7 @@ interface Profile {
 
 function RootLayoutContent() {
   const [fontsLoaded, fontError] = useFonts({
-    'Honk': require('../assets/Fonts/Honk.ttf'),
+    Honk: require('../assets/Fonts/Honk.ttf'),
   });
 
   const [session, setSession] = useState<Session | null>(null);
@@ -42,10 +42,10 @@ function RootLayoutContent() {
     if (fontsLoaded || fontError) {
       SplashScreen.hideAsync();
     }
-    
+
     // fetchProfile (Con avatar_id)
     const fetchProfile = async (session: Session) => {
-       const { data, error } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
         .select('username, avatar_id') // <-- Pide el avatar
         .eq('id', session.user.id)
@@ -56,7 +56,7 @@ function RootLayoutContent() {
         setProfile(data);
       }
     };
-    
+
     // Lógica de sesión (sin cambios)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -101,11 +101,7 @@ function RootLayoutContent() {
     <SafeAreaView style={styles.container}>
       {/* <StatusBar style="light" /> */}
 
-      <CustomHeader
-        title="RUBIKON"
-        leftIcon="settings"
-        rightIcon="user"
-      />
+      <CustomHeader title="RUBIKON" leftIcon="settings" rightIcon="user" />
 
       <Stack
         screenOptions={{
@@ -115,12 +111,8 @@ function RootLayoutContent() {
           },
         }}
       />
-      
-      <ReusableModal
-        title="Ajustes"
-        visible={visibleModal === 'settings'}
-        onClose={closeModal}
-      >
+
+      <ReusableModal title="Ajustes" visible={visibleModal === 'settings'} onClose={closeModal}>
         <SettingsContent />
       </ReusableModal>
 
@@ -140,11 +132,7 @@ function RootLayoutContent() {
         />
       </ReusableModal>
 
-      <ReusableModal
-        title="Iniciar Sesión"
-        visible={visibleModal === 'login'}
-        onClose={closeModal}
-      >
+      <ReusableModal title="Iniciar Sesión" visible={visibleModal === 'login'} onClose={closeModal}>
         <LoginContent onLoginSuccess={closeModal} />
       </ReusableModal>
 

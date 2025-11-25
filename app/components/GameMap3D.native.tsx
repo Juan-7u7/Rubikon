@@ -9,7 +9,8 @@ import * as THREE from 'three';
 import Character3D from './Character3D';
 
 // URL del modelo del mapa en Supabase
-const mapModelUrl = "https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb";
+const mapModelUrl =
+  'https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb';
 
 interface GameMap3DProps {
   joystickX: number;
@@ -19,14 +20,8 @@ interface GameMap3DProps {
 // Componente del modelo del mapa
 function MapModel() {
   const { scene } = useGLTF(mapModelUrl);
-  
-  return (
-    <primitive 
-      object={scene} 
-      position={[0, 0, 0]} 
-      scale={2}
-    />
-  );
+
+  return <primitive object={scene} position={[0, 0, 0]} scale={2} />;
 }
 
 // Componente de la cámara que sigue al personaje
@@ -54,11 +49,11 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
       if (joystickX !== 0 || joystickY !== 0) {
         const newX = targetPosition.current[0] + joystickX * moveSpeed;
         const newZ = targetPosition.current[2] - joystickY * moveSpeed;
-        
+
         const maxDistance = 10;
         const clampedX = Math.max(-maxDistance, Math.min(maxDistance, newX));
         const clampedZ = Math.max(-maxDistance, Math.min(maxDistance, newZ));
-        
+
         targetPosition.current = [clampedX, 0, clampedZ];
         setCharacterPosition([clampedX, 0, clampedZ]);
       }
@@ -73,10 +68,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
   return (
     <View style={styles.container}>
-      <Canvas
-        shadows
-        camera={{ position: [0, 5, 8], fov: 60 }}
-      >
+      <Canvas shadows camera={{ position: [0, 5, 8], fov: 60 }}>
         <ambientLight intensity={0.5} />
         <directionalLight
           position={[10, 10, 5]}
@@ -95,10 +87,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
         <MapModel />
 
-        <Character3D 
-          position={characterPosition} 
-          targetPosition={targetPosition.current}
-        />
+        <Character3D position={characterPosition} targetPosition={targetPosition.current} />
 
         <FollowCamera targetPosition={targetPosition.current} />
       </Canvas>

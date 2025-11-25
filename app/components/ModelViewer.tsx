@@ -5,15 +5,15 @@ import { Canvas } from '@react-three/fiber/native';
 import React, { Suspense, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-const modelPath = "https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb";
+const modelPath =
+  'https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb';
 
 function Model() {
-  const { scene } = useGLTF(modelPath); 
+  const { scene } = useGLTF(modelPath);
   return <primitive object={scene} />;
 }
 
 export default function ModelViewer() {
-  
   // 2. Mueve el 'preload' aquí, dentro de un useEffect
   //    para que solo se ejecute una vez en el cliente (navegador)
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function ModelViewer() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1,
     backgroundColor: 'transparent',
   },
 });

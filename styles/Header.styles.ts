@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#1A1A1D', // Mantenemos el fondo negro
     paddingHorizontal: 16, // Espacio a los lados
   },
-  
+
   // Columna Izquierda (1/3 del espacio)
   leftContainer: {
     flex: 1,

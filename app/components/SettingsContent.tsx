@@ -16,20 +16,13 @@ interface SettingsRowProps {
 // Optimizamos el componente de fila con React.memo.
 // Esto es muy efectivo porque cada fila solo se volverá a renderizar si sus
 // props específicas (title, leftIcon, rightContent) cambian.
-const SettingsRow: React.FC<SettingsRowProps> = memo(
-  ({ title, leftIcon, rightContent }) => (
-    <View style={styles.row}>
-      <Feather
-        name={leftIcon}
-        size={22}
-        color={theme.colors.secondary}
-        style={styles.icon}
-      />
-      <Text style={styles.rowTitle}>{title}</Text>
-      <View style={styles.rightContent}>{rightContent}</View>
-    </View>
-  )
-);
+const SettingsRow: React.FC<SettingsRowProps> = memo(({ title, leftIcon, rightContent }) => (
+  <View style={styles.row}>
+    <Feather name={leftIcon} size={22} color={theme.colors.secondary} style={styles.icon} />
+    <Text style={styles.rowTitle}>{title}</Text>
+    <View style={styles.rightContent}>{rightContent}</View>
+  </View>
+));
 // ---
 
 // Aunque SettingsContent tiene su propio estado, lo envolvemos en React.memo.
@@ -67,26 +60,14 @@ const SettingsContent = memo(() => {
           <SettingsRow
             title="Política de Privacidad"
             leftIcon="shield"
-            rightContent={
-              <Feather
-                name="chevron-right"
-                size={22}
-                color={theme.colors.secondary}
-              />
-            }
+            rightContent={<Feather name="chevron-right" size={22} color={theme.colors.secondary} />}
           />
         </TouchableOpacity>
         <TouchableOpacity>
           <SettingsRow
             title="Términos de Servicio"
             leftIcon="file-text"
-            rightContent={
-              <Feather
-                name="chevron-right"
-                size={22}
-                color={theme.colors.secondary}
-              />
-            }
+            rightContent={<Feather name="chevron-right" size={22} color={theme.colors.secondary} />}
           />
         </TouchableOpacity>
       </View>

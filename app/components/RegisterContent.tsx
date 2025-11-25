@@ -9,13 +9,13 @@
 // Importamos 'memo' de React para optimización y 'useState' para el manejo del estado local.
 import React, { memo, useState } from 'react';
 import {
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 // Importamos el contexto de alertas para mostrar mensajes al usuario.
 import { useAlert } from '../../context/AlertContext';
@@ -51,7 +51,7 @@ interface RegisterContentProps {
 // el componente padre se actualiza pero las props de RegisterContent no cambian.
 const RegisterContent = memo(({ onRegisterSuccess }: RegisterContentProps) => {
   const { showAlert } = useAlert();
-  
+
   // Estados para los campos del formulario
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -130,7 +130,7 @@ const RegisterContent = memo(({ onRegisterSuccess }: RegisterContentProps) => {
         placeholderTextColor={theme.colors.secondary}
         autoCapitalize="none"
       />
-      
+
       {/* Campo para el email */}
       <TextInput
         style={formStyles.input}
@@ -141,7 +141,7 @@ const RegisterContent = memo(({ onRegisterSuccess }: RegisterContentProps) => {
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      
+
       {/* Campo para la contraseña */}
       <TextInput
         style={formStyles.input}
@@ -151,16 +151,14 @@ const RegisterContent = memo(({ onRegisterSuccess }: RegisterContentProps) => {
         placeholderTextColor={theme.colors.secondary}
         secureTextEntry // Oculta la contraseña
       />
-      
+
       {/* Botón de registro */}
       <TouchableOpacity
         style={[formStyles.button, loading && formStyles.buttonDisabled]}
         onPress={handleRegister}
         disabled={loading}
       >
-        <Text style={formStyles.buttonText}>
-          {loading ? 'Creando cuenta...' : 'Crear Cuenta'}
-        </Text>
+        <Text style={formStyles.buttonText}>{loading ? 'Creando cuenta...' : 'Crear Cuenta'}</Text>
       </TouchableOpacity>
     </View>
   );

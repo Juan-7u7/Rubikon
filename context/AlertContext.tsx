@@ -37,11 +37,7 @@ export function AlertProvider({ children }: { children: React.ReactNode }) {
       {/* 7. ¡AQUÍ ESTÁ LA MAGIA! El Modal de Alerta vive aquí,
           globalmente, esperando a que alertInfo cambie. */}
       {alertInfo && (
-        <ReusableModal
-          title={alertInfo.title}
-          visible={!!alertInfo}
-          onClose={closeAlert}
-        >
+        <ReusableModal title={alertInfo.title} visible={!!alertInfo} onClose={closeAlert}>
           <Text
             style={{
               color: theme.colors.primary,

@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     paddingTop: theme.spacing.xl * 1.5, // Más espacio arriba
-    paddingBottom: theme.spacing.xl, 
+    paddingBottom: theme.spacing.xl,
   },
   title: {
     fontSize: isSmallDevice ? theme.fontSizes.title : theme.fontSizes.title * 1.1,

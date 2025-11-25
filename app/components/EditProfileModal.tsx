@@ -1,16 +1,15 @@
-
 // app/components/EditProfileModal.tsx
 import { Feather } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react';
 import {
-    Animated,
-    Image,
-    Modal,
-    Pressable,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity
+  Animated,
+  Image,
+  Modal,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import { styles } from '../../styles/EditProfileModal.styles';
 import { theme } from '../../styles/theme';
@@ -65,20 +64,10 @@ const EditProfileModal = ({
   }
 
   return (
-    <Modal
-      animationType="none"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
+    <Modal animationType="none" transparent={true} visible={visible} onRequestClose={onClose}>
       <Pressable style={styles.modalBackdrop} onPress={onClose}>
         <Pressable style={{ width: '90%' }} onPress={(e) => e.stopPropagation()}>
-          <Animated.View
-            style={[
-              styles.modalContainer,
-              { transform: [{ scale: scaleAnim }] },
-            ]}
-          >
+          <Animated.View style={[styles.modalContainer, { transform: [{ scale: scaleAnim }] }]}>
             <ScrollView contentContainerStyle={styles.contentContainer}>
               <TouchableOpacity style={styles.closeButton} onPress={onClose}>
                 <Feather
@@ -91,10 +80,7 @@ const EditProfileModal = ({
               <Text style={styles.title}>Editar Perfil</Text>
 
               <Text style={styles.sectionLabel}>Avatar actual</Text>
-              <Image
-                source={avatarMap[newAvatarId]}
-                style={styles.avatar}
-              />
+              <Image source={avatarMap[newAvatarId]} style={styles.avatar} />
 
               <Text style={styles.sectionLabel}>Escoge tu nuevo avatar</Text>
               <ScrollView
@@ -112,10 +98,7 @@ const EditProfileModal = ({
                     >
                       <Image
                         source={avatarMap[id]}
-                        style={[
-                          styles.avatarPreview,
-                          newAvatarId === id && styles.selectedAvatar,
-                        ]}
+                        style={[styles.avatarPreview, newAvatarId === id && styles.selectedAvatar]}
                       />
                     </TouchableOpacity>
                   );
@@ -131,10 +114,7 @@ const EditProfileModal = ({
                 placeholderTextColor={theme.colors.secondary}
               />
 
-              <TouchableOpacity
-                style={styles.saveButton}
-                onPress={handleSave}
-              >
+              <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
                 <Text style={styles.saveButtonText}>Guardar</Text>
               </TouchableOpacity>
             </ScrollView>

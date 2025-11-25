@@ -3,18 +3,12 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    
+
     // "paths" SE HA ELIMINADO DE AQUÍ
 
     "types": [],
     "esModuleInterop": true,
     "importHelpers": true
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "expo-router/types"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "expo-router/types"]
 }

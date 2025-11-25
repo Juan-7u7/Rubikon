@@ -7,7 +7,8 @@ import { WebView } from 'react-native-webview';
 import { theme } from '../../styles/theme';
 
 // 1. La URL de tu modelo en Supabase
-const modelUrl = "https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb";
+const modelUrl =
+  'https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb';
 
 // 2. --- ¡AQUÍ ESTÁ LA MODIFICACIÓN! ---
 // Añadimos los parámetros para ocultar la interfaz del visor

@@ -45,11 +45,7 @@ const GuestView = memo(() => {
     <View>
       <View style={styles.profileHeader}>
         <View style={styles.avatarContainer}>
-          <Feather
-            name="user"
-            size={theme.iconSizes.large}
-            color={theme.colors.primary}
-          />
+          <Feather name="user" size={theme.iconSizes.large} color={theme.colors.primary} />
         </View>
         <View style={styles.userInfo}>
           <Text style={styles.userName}>Invitado</Text>
@@ -68,11 +64,9 @@ const GuestView = memo(() => {
             color={theme.colors.primary}
             style={styles.actionIcon}
           />
-          <Text style={[styles.guestButtonText, styles.primaryButtonText]}>
-            Iniciar Sesión
-          </Text>
+          <Text style={[styles.guestButtonText, styles.primaryButtonText]}>Iniciar Sesión</Text>
         </TouchableOpacity>
-        
+
         {/* Botón para abrir el modal de Registro */}
         <TouchableOpacity
           style={[styles.guestButton, styles.secondaryButton]}
@@ -84,9 +78,7 @@ const GuestView = memo(() => {
             color={theme.colors.primary}
             style={styles.actionIcon}
           />
-          <Text style={[styles.guestButtonText, styles.secondaryButtonText]}>
-            Registrarse
-          </Text>
+          <Text style={[styles.guestButtonText, styles.secondaryButtonText]}>Registrarse</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -131,9 +123,7 @@ const UserView = memo(
               color={theme.colors.danger}
               style={styles.actionIcon}
             />
-            <Text style={[styles.actionText, styles.dangerText]}>
-              Cerrar Sesión
-            </Text>
+            <Text style={[styles.actionText, styles.dangerText]}>Cerrar Sesión</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -155,16 +145,14 @@ const UserContent = memo(
     onLogoutPress,
     onProfileUpdate,
   }: UserContentProps) => {
-    const [isEditProfileModalVisible, setEditProfileModalVisible] =
-      useState(false);
+    const [isEditProfileModalVisible, setEditProfileModalVisible] = useState(false);
 
     // La lógica de guardado se mantiene aquí, pero ahora notifica al padre.
-    const handleSaveProfile = async (
-      newUsername: string,
-      newAvatarId: number
-    ) => {
+    const handleSaveProfile = async (newUsername: string, newAvatarId: number) => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (!user) throw new Error('No user logged in');
 
         const { error } = await supabase
@@ -179,7 +167,6 @@ const UserContent = memo(
 
         // Cerramos el modal después de un guardado exitoso.
         setEditProfileModalVisible(false);
-
       } catch (error) {
         console.error('Error updating profile:', error);
         // Aquí podrías mostrar una alerta al usuario.

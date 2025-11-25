@@ -4,20 +4,30 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 interface JoystickProps {
   onMove: (x: number, y: number) => void;
   size?: number;
 }
 
-export default function Joystick({ onMove, size = 100 }: JoystickProps) {
+import { JoystickPropsSchema } from '../../types/schemas';
+
+export default function Joystick(props: JoystickProps) {
+  const { onMove, size = 100 } = props;
+
+  // Validación en tiempo de desarrollo
+  if (__DEV__) {
+    try {
+      JoystickPropsSchema.parse(props);
+    } catch (error) {
+      console.warn('Invalid props passed to Joystick:', error);
+    }
+  }
+
   // Tamaño del botón central (45% del tamaño total)
   const knobSize = size * 0.45;
+
   // Distancia máxima que puede moverse el knob desde el centro
   const maxDistance = (size - knobSize) / 2;
 
@@ -29,7 +39,7 @@ export default function Joystick({ onMove, size = 100 }: JoystickProps) {
     .onUpdate((event) => {
       // Calcular distancia desde el centro
       const distance = Math.sqrt(event.translationX ** 2 + event.translationY ** 2);
-      
+
       if (distance <= maxDistance) {
         // Si está dentro del límite, usar posición directa
         translateX.value = event.translationX;
@@ -54,10 +64,7 @@ export default function Joystick({ onMove, size = 100 }: JoystickProps) {
     });
 
   const knobStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-    ],
+    transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
   }));
 
   return (
@@ -65,13 +72,18 @@ export default function Joystick({ onMove, size = 100 }: JoystickProps) {
       {/* Base del joystick - Glassmorphism */}
       <View style={[styles.base, { width: size, height: size, borderRadius: size / 2 }]}>
         {/* Anillo interior decorativo */}
-        <View style={[styles.innerRing, { 
-          width: size * 0.7, 
-          height: size * 0.7, 
-          borderRadius: (size * 0.7) / 2 
-        }]} />
+        <View
+          style={[
+            styles.innerRing,
+            {
+              width: size * 0.7,
+              height: size * 0.7,
+              borderRadius: (size * 0.7) / 2,
+            },
+          ]}
+        />
       </View>
-      
+
       {/* Knob del joystick */}
       <GestureDetector gesture={panGesture}>
         <Animated.View
@@ -86,11 +98,16 @@ export default function Joystick({ onMove, size = 100 }: JoystickProps) {
           ]}
         >
           {/* Centro del knob */}
-          <View style={[styles.knobCenter, {
-            width: knobSize * 0.4,
-            height: knobSize * 0.4,
-            borderRadius: (knobSize * 0.4) / 2,
-          }]} />
+          <View
+            style={[
+              styles.knobCenter,
+              {
+                width: knobSize * 0.4,
+                height: knobSize * 0.4,
+                borderRadius: (knobSize * 0.4) / 2,
+              },
+            ]}
+          />
         </Animated.View>
       </GestureDetector>
     </View>

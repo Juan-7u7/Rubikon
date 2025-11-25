@@ -18,25 +18,14 @@ interface CustomHeaderProps {
 // Esto es útil porque el Header podría estar en un layout que se
 // renderiza frecuentemente por cambios en otras partes de la UI.
 const CustomHeader = memo(
-  ({
-    title,
-    leftIcon = 'settings',
-    rightIcon = 'user',
-  }: CustomHeaderProps) => {
+  ({ title, leftIcon = 'settings', rightIcon = 'user' }: CustomHeaderProps) => {
     const { openModal } = useModal();
 
     return (
       <View style={styles.headerContainer}>
         <View style={styles.leftContainer}>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => openModal('settings')}
-          >
-            <Feather
-              name={leftIcon}
-              size={theme.iconSizes.medium}
-              color={theme.colors.primary}
-            />
+          <TouchableOpacity style={styles.iconButton} onPress={() => openModal('settings')}>
+            <Feather name={leftIcon} size={theme.iconSizes.medium} color={theme.colors.primary} />
           </TouchableOpacity>
         </View>
 
@@ -45,15 +34,8 @@ const CustomHeader = memo(
         </View>
 
         <View style={styles.rightContainer}>
-          <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => openModal('user')}
-          >
-            <Feather
-              name={rightIcon}
-              size={theme.iconSizes.medium}
-              color={theme.colors.primary}
-            />
+          <TouchableOpacity style={styles.iconButton} onPress={() => openModal('user')}>
+            <Feather name={rightIcon} size={theme.iconSizes.medium} color={theme.colors.primary} />
           </TouchableOpacity>
         </View>
       </View>

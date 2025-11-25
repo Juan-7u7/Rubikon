@@ -20,14 +20,14 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
   const characterRef = useRef<THREE.Group | null>(null);
   const targetPositionRef = useRef(new THREE.Vector3(0, 0, 0));
   const currentPositionRef = useRef(new THREE.Vector3(0, 0, 0));
-  
+
   // Estados de la cámara
   const [cameraMode, setCameraMode] = useState<'follow' | 'free'>('follow');
   const freeCameraPosition = useRef(new THREE.Vector3(0, 10, 15));
   const freeCameraRotation = useRef({ theta: 0, phi: Math.PI / 4 });
   const isDragging = useRef(false);
   const lastMousePos = useRef({ x: 0, y: 0 });
-  
+
   // Estados para gestos táctiles (móvil)
   const lastTouchDistance = useRef(0);
   const touchStartPos = useRef({ x: 0, y: 0 });
@@ -53,7 +53,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
     cameraRef.current = camera;
 
     // ===== RENDERER =====
-    const renderer = new THREE.WebGLRenderer({ 
+    const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
     });
@@ -95,7 +95,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
     // ===== SUELO Y GRID =====
     const floorGeometry = new THREE.CircleGeometry(25, 64);
-    const floorMaterial = new THREE.MeshStandardMaterial({ 
+    const floorMaterial = new THREE.MeshStandardMaterial({
       color: 0x90ee90, // Verde pasto claro
       roughness: 0.9,
       metalness: 0.1,
@@ -114,9 +114,9 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
     // ========== CREAR PERSONAJE: FANTASMA DE CABALLERO MEDIEVAL ==========
     const character = new THREE.Group();
-    
+
     // Material fantasmal con transparencia y brillo
-    const ghostMaterial = new THREE.MeshStandardMaterial({ 
+    const ghostMaterial = new THREE.MeshStandardMaterial({
       color: 0xadd8e6, // Azul claro fantasmal
       roughness: 0.2,
       metalness: 0.3,
@@ -127,7 +127,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
     });
 
     // Material metálico para la armadura
-    const armorMaterial = new THREE.MeshStandardMaterial({ 
+    const armorMaterial = new THREE.MeshStandardMaterial({
       color: 0xc0c0c0, // Plata
       roughness: 0.3,
       metalness: 0.9,
@@ -165,18 +165,21 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
     // Cresta del casco
     const crestGeometry = new THREE.BoxGeometry(0.1, 0.3, 0.4);
-    const crest = new THREE.Mesh(crestGeometry, new THREE.MeshStandardMaterial({
-      color: 0xff0000, // Rojo
-      emissive: 0xff0000,
-      emissiveIntensity: 0.3,
-      transparent: true,
-      opacity: 0.7,
-    }));
+    const crest = new THREE.Mesh(
+      crestGeometry,
+      new THREE.MeshStandardMaterial({
+        color: 0xff0000, // Rojo
+        emissive: 0xff0000,
+        emissiveIntensity: 0.3,
+        transparent: true,
+        opacity: 0.7,
+      })
+    );
     crest.position.set(0, 1.95, 0);
     character.add(crest);
 
     // OJOS BRILLANTES (efecto fantasmal)
-    const eyeMaterial = new THREE.MeshStandardMaterial({ 
+    const eyeMaterial = new THREE.MeshStandardMaterial({
       color: 0x00ffff, // Cyan brillante
       emissive: 0x00ffff,
       emissiveIntensity: 1.5,
@@ -184,7 +187,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
       opacity: 0.9,
     });
     const eyeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
-    
+
     const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
     leftEye.position.set(0.12, 1.7, 0.25);
     character.add(leftEye);
@@ -195,7 +198,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
     // BRAZOS - Hombreras y brazos
     const shoulderGeometry = new THREE.SphereGeometry(0.2, 16, 16);
-    
+
     const leftShoulder = new THREE.Mesh(shoulderGeometry, armorMaterial);
     leftShoulder.position.set(0.4, 1.3, 0);
     character.add(leftShoulder);
@@ -206,7 +209,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
     // Brazos fantasmales
     const armGeometry = new THREE.CapsuleGeometry(0.1, 0.5, 8, 16);
-    
+
     const leftArm = new THREE.Mesh(armGeometry, ghostMaterial);
     leftArm.position.set(0.4, 0.8, 0);
     character.add(leftArm);
@@ -217,7 +220,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
     // PIERNAS - Parte inferior fantasmal
     const legGeometry = new THREE.CylinderGeometry(0.12, 0.08, 0.6, 8);
-    
+
     const leftLeg = new THREE.Mesh(legGeometry, ghostMaterial);
     leftLeg.position.set(0.15, 0.3, 0);
     character.add(leftLeg);
@@ -255,9 +258,9 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
     // Sombra debajo del personaje
     const shadowGeometry = new THREE.CircleGeometry(0.5, 32);
-    const shadowMaterial = new THREE.MeshBasicMaterial({ 
-      color: 0x000000, 
-      opacity: 0.3, 
+    const shadowMaterial = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      opacity: 0.3,
       transparent: true,
       depthWrite: false,
     });
@@ -269,25 +272,62 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
     scene.add(character);
     characterRef.current = character;
 
-    // Cargar modelo del mapa
+    // Interfaz para el resultado de GLTFLoader
+    interface GLTFResult {
+      scene: THREE.Group;
+      scenes: THREE.Group[];
+      cameras: THREE.Camera[];
+      animations: THREE.AnimationClip[];
+      asset: any;
+    }
+
+    // Cargar modelo del mapa con manejo de errores
     const loader = new GLTFLoader();
-    loader.load(
-      'https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb',
-      (gltf: any) => {
-        gltf.scene.scale.set(2, 2, 2);
-        gltf.scene.traverse((child: any) => {
-          if (child.isMesh) {
-            child.castShadow = true;
-            child.receiveShadow = true;
+    let modelLoadAttempts = 0;
+    const maxRetries = 3;
+
+    const loadModel = () => {
+      loader.load(
+        'https://ckbuwzhdxmlaarajwtbo.supabase.co/storage/v1/object/public/models/rubik.glb',
+        // Éxito
+        (gltf: GLTFResult) => {
+          try {
+            gltf.scene.scale.set(2, 2, 2);
+            gltf.scene.traverse((child: THREE.Object3D) => {
+              if ((child as THREE.Mesh).isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+              }
+            });
+            scene.add(gltf.scene);
+            console.log('✅ Modelo 3D cargado exitosamente');
+          } catch (error) {
+            console.error('❌ Error procesando modelo 3D:', error);
           }
-        });
-        scene.add(gltf.scene);
-      },
-      undefined,
-      (error: any) => {
-        console.error('Error loading model:', error);
-      }
-    );
+        },
+        // Progreso
+        (progress: ProgressEvent) => {
+          if (progress.total > 0) {
+            const percentComplete = (progress.loaded / progress.total) * 100;
+            console.log(`⏳ Cargando modelo: ${percentComplete.toFixed(1)}%`);
+          }
+        },
+        // Error
+        (error: unknown) => {
+          console.error('❌ Error cargando modelo 3D:', error);
+          modelLoadAttempts++;
+
+          if (modelLoadAttempts < maxRetries) {
+            console.log(`🔄 Reintentando... (${modelLoadAttempts}/${maxRetries})`);
+            setTimeout(loadModel, 2000); // Reintentar después de 2 segundos
+          } else {
+            console.error('❌ No se pudo cargar el modelo después de varios intentos');
+          }
+        }
+      );
+    };
+
+    loadModel();
 
     // ========== CONTROLES DE MOUSE (Desktop) ==========
     const handleMouseDown = (e: MouseEvent) => {
@@ -306,8 +346,11 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
       freeCameraRotation.current.theta -= deltaX * 0.005;
       freeCameraRotation.current.phi -= deltaY * 0.005;
-      
-      freeCameraRotation.current.phi = Math.max(0.1, Math.min(Math.PI - 0.1, freeCameraRotation.current.phi));
+
+      freeCameraRotation.current.phi = Math.max(
+        0.1,
+        Math.min(Math.PI - 0.1, freeCameraRotation.current.phi)
+      );
 
       lastMousePos.current = { x: e.clientX, y: e.clientY };
     };
@@ -338,13 +381,13 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
     const handleTouchStart = (e: TouchEvent) => {
       if (cameraMode !== 'free') return;
-      
+
       if (e.touches.length === 1) {
         // Un dedo: rotar
         isDragging.current = true;
         touchStartPos.current = {
           x: e.touches[0].clientX,
-          y: e.touches[0].clientY
+          y: e.touches[0].clientY,
         };
       } else if (e.touches.length === 2) {
         // Dos dedos: zoom (pinch)
@@ -364,22 +407,25 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
 
         freeCameraRotation.current.theta -= deltaX * 0.005;
         freeCameraRotation.current.phi -= deltaY * 0.005;
-        
-        freeCameraRotation.current.phi = Math.max(0.1, Math.min(Math.PI - 0.1, freeCameraRotation.current.phi));
+
+        freeCameraRotation.current.phi = Math.max(
+          0.1,
+          Math.min(Math.PI - 0.1, freeCameraRotation.current.phi)
+        );
 
         touchStartPos.current = {
           x: e.touches[0].clientX,
-          y: e.touches[0].clientY
+          y: e.touches[0].clientY,
         };
       } else if (e.touches.length === 2) {
         // Zoom con dos dedos (pinch)
         const currentDistance = getTouchDistance(e.touches);
         const delta = currentDistance - lastTouchDistance.current;
-        
+
         const radius = freeCameraPosition.current.length();
         const newRadius = Math.max(5, Math.min(30, radius - delta * 0.05));
         freeCameraPosition.current.setLength(newRadius);
-        
+
         lastTouchDistance.current = currentDistance;
       }
     };
@@ -395,7 +441,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
     renderer.domElement.addEventListener('mouseup', handleMouseUp);
     renderer.domElement.addEventListener('wheel', handleWheel, { passive: false });
     renderer.domElement.addEventListener('contextmenu', handleContextMenu);
-    
+
     renderer.domElement.addEventListener('touchstart', handleTouchStart, { passive: false });
     renderer.domElement.addEventListener('touchmove', handleTouchMove, { passive: false });
     renderer.domElement.addEventListener('touchend', handleTouchEnd);
@@ -416,10 +462,10 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
           const targetAngle = Math.atan2(direction.x, direction.z);
           const currentAngle = characterRef.current.rotation.y;
           let angleDiff = targetAngle - currentAngle;
-          
+
           while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
           while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-          
+
           characterRef.current.rotation.y += angleDiff * 0.1;
         }
 
@@ -429,7 +475,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
           const offset = new THREE.Vector3(0, 6, 10);
           const cameraTarget = currentPositionRef.current.clone().add(offset);
           camera.position.lerp(cameraTarget, 0.05);
-          
+
           const lookAtTarget = currentPositionRef.current.clone();
           lookAtTarget.y += 1;
           camera.lookAt(lookAtTarget);
@@ -443,15 +489,15 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
           const offsetX = radius * Math.sin(phi) * Math.cos(theta);
           const offsetY = radius * Math.cos(phi);
           const offsetZ = radius * Math.sin(phi) * Math.sin(theta);
-          
+
           // Posicionar cámara alrededor del personaje
           const targetCameraPos = currentPositionRef.current.clone();
           targetCameraPos.x += offsetX;
           targetCameraPos.y += offsetY;
           targetCameraPos.z += offsetZ;
-          
+
           camera.position.lerp(targetCameraPos, 0.1);
-          
+
           // Siempre mirar al personaje
           const lookAtTarget = currentPositionRef.current.clone();
           lookAtTarget.y += 1;
@@ -469,7 +515,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
       if (!containerRef.current) return;
       const width = containerRef.current.clientWidth;
       const height = containerRef.current.clientHeight;
-      
+
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
@@ -515,27 +561,24 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
   }, [joystickX, joystickY]);
 
   const toggleCameraMode = () => {
-    setCameraMode(prev => prev === 'follow' ? 'free' : 'follow');
+    setCameraMode((prev) => (prev === 'follow' ? 'free' : 'follow'));
   };
 
   return (
     <View style={styles.container}>
-      <div 
-        ref={containerRef as any} 
-        style={{ 
-          width: '100%', 
+      <div
+        ref={containerRef as any}
+        style={{
+          width: '100%',
           height: '100%',
           position: 'absolute',
           top: 0,
           left: 0,
-        }} 
+        }}
       />
-      
+
       {/* Botón para alternar modo de cámara */}
-      <TouchableOpacity 
-        style={styles.cameraButton}
-        onPress={toggleCameraMode}
-      >
+      <TouchableOpacity style={styles.cameraButton} onPress={toggleCameraMode}>
         <Text style={styles.cameraButtonText}>
           {cameraMode === 'follow' ? '📹 Cámara Fija' : '🎥 Cámara Libre'}
         </Text>
@@ -544,9 +587,7 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
       {/* Instrucciones de cámara libre */}
       {cameraMode === 'free' && (
         <View style={styles.cameraHint}>
-          <Text style={styles.hintText}>
-            � Arrastra para rotar • ✌️ Pinch para zoom
-          </Text>
+          <Text style={styles.hintText}>� Arrastra para rotar • ✌️ Pinch para zoom</Text>
         </View>
       )}
     </View>

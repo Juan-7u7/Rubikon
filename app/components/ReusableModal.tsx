@@ -17,43 +17,29 @@ interface ReusableModalProps {
 // Esto es especialmente importante para un modal, ya que evita que se
 // vuelva a renderizar innecesariamente cuando está oculto (visible={false})
 // o cuando los componentes padres se actualizan por razones no relacionadas.
-const ReusableModal = memo(
-  ({ visible, onClose, title, children }: ReusableModalProps) => {
-    // Si el modal no es visible, no renderizamos nada.
-    // Esto es una optimización adicional para no ocupar recursos.
-    if (!visible) {
-      return null;
-    }
-
-    return (
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={visible}
-        onRequestClose={onClose}
-      >
-        <Pressable style={styles.modalBackdrop} onPress={onClose}>
-          <Pressable
-            style={styles.modalContainer}
-            onPress={(e) => e.stopPropagation()}
-          >
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{title}</Text>
-              <TouchableOpacity onPress={onClose}>
-                <Feather
-                  name="x"
-                  size={theme.iconSizes.medium}
-                  color={theme.colors.primary}
-                />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.modalContent}>{children}</View>
-          </Pressable>
-        </Pressable>
-      </Modal>
-    );
+const ReusableModal = memo(({ visible, onClose, title, children }: ReusableModalProps) => {
+  // Si el modal no es visible, no renderizamos nada.
+  // Esto es una optimización adicional para no ocupar recursos.
+  if (!visible) {
+    return null;
   }
-);
+
+  return (
+    <Modal animationType="fade" transparent={true} visible={visible} onRequestClose={onClose}>
+      <Pressable style={styles.modalBackdrop} onPress={onClose}>
+        <Pressable style={styles.modalContainer} onPress={(e) => e.stopPropagation()}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>{title}</Text>
+            <TouchableOpacity onPress={onClose}>
+              <Feather name="x" size={theme.iconSizes.medium} color={theme.colors.primary} />
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.modalContent}>{children}</View>
+        </Pressable>
+      </Pressable>
+    </Modal>
+  );
+});
 
 export default ReusableModal;

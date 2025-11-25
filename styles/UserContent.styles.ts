@@ -33,7 +33,7 @@ export const styles = StyleSheet.create({
     fontSize: theme.fontSizes.bodySmall,
     color: theme.colors.secondary,
   },
-  
+
   // --- Estilos de Usuario Logueado ---
   actionsContainer: {
     borderTopWidth: 1,
@@ -87,7 +87,7 @@ export const styles = StyleSheet.create({
     color: theme.colors.primary,
   },
   // ... (tus otros estilos)
-  
+
   // 👇 AÑADE ESTE BLOQUE DE CÓDIGO 👇
   avatarImage: {
     width: 60,
@@ -96,5 +96,4 @@ export const styles = StyleSheet.create({
     backgroundColor: theme.colors.border,
   },
   // 👆 AÑADE ESTE BLOQUE DE CÓDIGO 👆
-
 });

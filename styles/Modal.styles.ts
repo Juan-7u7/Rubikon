@@ -19,7 +19,7 @@ export const styles = StyleSheet.create({
     maxHeight: '80%',
     backgroundColor: theme.colors.background, // <--- 2. Usamos el tema
     borderRadius: theme.borderRadius.medium, // <--- 2. Usamos el tema
-    padding: theme.spacing.xl,             // <--- 2. Usamos el tema
+    padding: theme.spacing.xl, // <--- 2. Usamos el tema
     ...theme.shadows.medium, // <--- 3. ¡Forma limpia de aplicar la sombra!
   },
 
@@ -30,15 +30,15 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border, // <--- 2. Usamos el tema
-    paddingBottom: theme.spacing.m,       // <--- 2. Estandarizado de 10 a 12
-    marginBottom: theme.spacing.l,        // <--- 2. Estandarizado de 15 a 16
+    paddingBottom: theme.spacing.m, // <--- 2. Estandarizado de 10 a 12
+    marginBottom: theme.spacing.l, // <--- 2. Estandarizado de 15 a 16
   },
 
   // Título del modal
   modalTitle: {
-    fontFamily: theme.fonts.main,       // <--- 2. Usamos el tema
-    fontSize: theme.fontSizes.title,    // <--- 2. Usamos el tema
-    color: theme.colors.primary,      // <--- 2. Usamos el tema
+    fontFamily: theme.fonts.main, // <--- 2. Usamos el tema
+    fontSize: theme.fontSizes.title, // <--- 2. Usamos el tema
+    color: theme.colors.primary, // <--- 2. Usamos el tema
   },
 
   // Contenido

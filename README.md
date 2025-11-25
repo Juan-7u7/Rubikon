@@ -1,53 +1,172 @@
-> Edited for use in IDX on 07/09/12
+# 🎮 Rubikon - Juego 3D con React Native
 
-# Welcome to your Expo app 👋
+## 📖 Descripción
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Rubikon es un juego 3D desarrollado con React Native y Three.js que presenta un fantasma de caballero medieval controlable en un entorno 3D interactivo. El proyecto utiliza Expo para soporte multiplataforma y ofrece una experiencia de juego fluida tanto en dispositivos móviles como en navegadores web.
 
-## Get started
+## ✨ Características
 
-#### Android
+- 🎮 **Controles Adaptativos**: Teclado para desktop, joystick virtual para móviles
+- 👻 **Personaje 3D**: Fantasma de caballero medieval con armadura y efectos especiales
+- 📹 **Sistema de Cámara Dual**:
+  - Cámara fija que sigue al personaje
+  - Cámara libre con control manual (rotar y zoom)
+- 🌈 **Iluminación Dinámica**: Ambiente colorido con múltiples fuentes de luz
+- 🎨 **Diseño Minimalista**: Interfaz limpia con efectos glassmorphism
+- 📱 **Multiplataforma**: Web, iOS y Android
+- 🕹️ **Controles Táctiles**: Soporte completo para gestos en móviles
 
-Android previews are defined as a `workspace.onStart` hook and started as a vscode task when the workspace is opened/started.
+## 🚀 Inicio Rápido
 
-Note, if you can't find the task, either:
-- Rebuild the environment (using command palette: `IDX: Rebuild Environment`), or
-- Run `npm run android -- --tunnel` command manually run android and see the output in your terminal. The device should pick up this new command and switch to start displaying the output from it.
+### Prerrequisitos
 
-In the output of this command/task, you'll find options to open the app in a
+- Node.js 18 o superior
+- npm o yarn
+- Expo CLI (se instala automáticamente)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You'll also find options to open the app's developer menu, reload the app, and more.
-
-#### Web
-
-Web previews will be started and managred automatically. Use the toolbar to manually refresh.
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Instalación
 
 ```bash
-npm run reset-project
+# Clonar el repositorio
+git clone https://github.com/Juan-7u7/Rubikon.git
+cd Rubikon
+
+# Instalar dependencias
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Desarrollo
 
-## Learn more
+```bash
+# Iniciar servidor de desarrollo
+npm start
 
-To learn more about developing your project with Expo, look at the following resources:
+# Ejecutar en web
+npm run web
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+# Ejecutar en iOS (requiere macOS)
+npm run ios
 
-## Join the community
+# Ejecutar en Android
+npm run android
+```
 
-Join our community of developers creating universal apps.
+## 🎮 Controles
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Desktop (PC/Mac)
+
+- **W** o **↑**: Mover adelante
+- **S** o **↓**: Mover atrás
+- **A** o **←**: Mover izquierda
+- **D** o **→**: Mover derecha
+- **Mouse + Arrastrar**: Rotar cámara (modo libre)
+- **Scroll**: Zoom in/out
+
+### Móvil/Tablet
+
+- **Joystick**: Mover personaje
+- **Un dedo + Arrastrar**: Rotar cámara
+- **Pinch (dos dedos)**: Zoom in/out
+
+### Botones de UI
+
+- **📹/🎥**: Alternar entre cámara fija y libre
+
+## 🏗️ Arquitectura
+
+### Estructura del Proyecto
+
+```
+Rubikon/
+├── app/                    # Aplicación principal
+│   ├── components/        # Componentes React
+│   │   ├── GameMap3D.tsx # Escena 3D principal
+│   │   ├── Joystick.tsx  # Control virtual
+│   │   └── ...
+│   ├── _layout.tsx       # Layout raíz
+│   └── index.tsx         # Pantalla principal
+├── context/              # React Contexts
+├── hooks/                # Custom Hooks
+├── lib/                  # Configuración de librerías
+├── styles/               # Estilos globales
+├── types/                # Definiciones TypeScript
+└── assets/               # Recursos estáticos
+```
+
+### Tecnologías Principales
+
+- **React Native**: Framework principal
+- **Expo**: Toolchain y SDK
+- **Three.js**: Motor 3D
+- **TypeScript**: Tipado estático
+- **React Native Gesture Handler**: Gestos táctiles
+- **React Native Reanimated**: Animaciones fluidas
+- **Supabase**: Backend y autenticación
+
+## 🎨 Personaje
+
+El personaje principal es un **Fantasma de Caballero Medieval** con:
+
+- Armadura metálica semi-transparente
+- Casco con visera y cresta roja
+- Ojos cyan brillantes (efecto fantasmal)
+- Capa azul oscuro flotante
+- Aura mágica azul
+- Efectos de transparencia y emisión de luz
+
+## 🛠️ Scripts Disponibles
+
+```bash
+npm start          # Iniciar servidor de desarrollo
+npm run web        # Ejecutar en navegador
+npm run ios        # Ejecutar en iOS
+npm run android    # Ejecutar en Android
+npm run lint       # Ejecutar linter
+```
+
+## 📝 Configuración
+
+El proyecto utiliza variables de entorno para configuración sensible:
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=tu_url_de_supabase
+EXPO_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anonima
+```
+
+## 🧪 Testing
+
+```bash
+npm test           # Ejecutar tests (próximamente)
+```
+
+## 🤝 Contribuir
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT.
+
+## 👥 Autores
+
+- **Juan-7u7** - [GitHub](https://github.com/Juan-7u7)
+
+## 🙏 Agradecimientos
+
+- Expo team por el excelente framework
+- Three.js community por el motor 3D
+- React Native community
+
+## 📞 Contacto
+
+Para preguntas o sugerencias, abre un issue en GitHub.
+
+---
+
+**¡Disfruta jugando con Rubikon!** 🎮✨

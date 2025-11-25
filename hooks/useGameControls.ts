@@ -1,18 +1,54 @@
-// app/index.tsx
-// Pantalla principal con controles adaptativos: teclado para desktop, joystick para móvil
+// hooks/useGameControls.ts
+// Custom hook para manejar los controles del juego (teclado y joystick)
 
-'use client';
+import { useCallback, useEffect, useState } from 'react';
 
-import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import GameMap3D from './components/GameMap3D';
-import Joystick from './components/Joystick';
+/**
+ * Configuración de los controles del juego
+ */
+interface GameControlsConfig {
+  /** Habilitar controles de teclado */
+  enableKeyboard?: boolean;
+  /** Habilitar controles táctiles */
+  enableTouch?: boolean;
+}
 
-export default function HomeScreen() {
-  // Estado del movimiento del personaje (-1 a 1 en cada eje)
+/**
+ * Estado de los controles del juego
+ */
+interface GameControlsState {
+  /** Movimiento en eje X (-1 a 1) */
+  x: number;
+  /** Movimiento en eje Y (-1 a 1) */
+  y: number;
+  /** Si el dispositivo es móvil */
+  isMobile: boolean;
+}
+
+/**
+ * Custom hook para gestionar los controles del juego
+ * Maneja tanto controles de teclado (desktop) como joystick (móvil)
+ *
+ * @param config - Configuración de los controles
+ * @returns Estado y funciones de los controles
+ *
+ * @example
+ * ```tsx
+ * const { x, y, isMobile, handleJoystickMove } = useGameControls();
+ *
+ * return (
+ *   <>
+ *     <GameMap3D joystickX={x} joystickY={y} />
+ *     {isMobile && <Joystick onMove={handleJoystickMove} />}
+ *   </>
+ * );
+ * ```
+ */
+export function useGameControls(config: GameControlsConfig = {}) {
+  const { enableKeyboard = true, enableTouch = true } = config;
+
   const [joystickX, setJoystickX] = useState(0);
   const [joystickY, setJoystickY] = useState(0);
-  // Detecta si el usuario está en móvil/tablet
   const [isMobile, setIsMobile] = useState(false);
 
   // Detectar si es dispositivo móvil o tablet
@@ -31,15 +67,17 @@ export default function HomeScreen() {
     };
 
     checkIfMobile();
+    // Revisar de nuevo si cambia el tamaño de ventana
     window.addEventListener('resize', checkIfMobile);
 
+    // Limpiar evento al desmontar componente
     return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
   // Controles de teclado para desktop
   useEffect(() => {
     // Solo activar controles de teclado en desktop
-    if (isMobile) return;
+    if (isMobile || !enableKeyboard) return;
 
     // Objeto para rastrear qué teclas están presionadas
     const keyState: { [key: string]: boolean } = {};
@@ -82,82 +120,38 @@ export default function HomeScreen() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [isMobile]);
+  }, [isMobile, enableKeyboard]);
 
   // Callback cuando el joystick se mueve
-  const handleJoystickMove = (x: number, y: number) => {
-    setJoystickX(x);
-    // Invertir Y para que arriba sea adelante
-    setJoystickY(-y);
-  };
+  const handleJoystickMove = useCallback(
+    (x: number, y: number) => {
+      if (!enableTouch) return;
 
-  return (
-    <View style={styles.container}>
-      {/* Escena 3D del juego */}
-      <View style={styles.gameContainer}>
-        <GameMap3D joystickX={joystickX} joystickY={joystickY} />
-      </View>
-
-      {/* Joystick solo en móvil/tablet */}
-      {isMobile && (
-        <View style={styles.joystickContainer}>
-          <Joystick onMove={handleJoystickMove} size={100} />
-        </View>
-      )}
-
-      {/* Indicador de controles para desktop */}
-      {!isMobile && (
-        <View style={styles.controlsHint}>
-          <div style={styles.hintText}>
-            Usa <strong>WASD</strong> o <strong>Flechas</strong> para mover
-          </div>
-        </View>
-      )}
-    </View>
+      setJoystickX(x);
+      // Invertir Y para que arriba sea adelante
+      setJoystickY(-y);
+    },
+    [enableTouch]
   );
+
+  // Resetear controles
+  const reset = useCallback(() => {
+    setJoystickX(0);
+    setJoystickY(0);
+  }, []);
+
+  return {
+    /** Movimiento en eje X (-1 a 1) */
+    x: joystickX,
+    /** Movimiento en eje Y (-1 a 1) */
+    y: joystickY,
+    /** Si el dispositivo es móvil */
+    isMobile,
+    /** Callback para manejar movimiento del joystick */
+    handleJoystickMove,
+    /** Resetear controles a 0 */
+    reset,
+  };
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#0a0a0a',
-    overflow: 'hidden',
-  },
-  gameContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: '100%',
-    height: '100%',
-  },
-  joystickContainer: {
-    position: 'absolute',
-    bottom: 30,
-    left: 30,
-    zIndex: 100,
-  },
-  controlsHint: {
-    position: 'absolute',
-    bottom: 30,
-    left: '50%',
-    transform: [{ translateX: '-50%' }],
-    zIndex: 100,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    backdropFilter: 'blur(10px)',
-  } as any,
-  hintText: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 14,
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    textAlign: 'center',
-  } as any,
-});
+export default useGameControls;

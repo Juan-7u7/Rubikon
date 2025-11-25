@@ -18,7 +18,7 @@ export default function Character3D({ position, targetPosition }: Character3DPro
     if (meshRef.current) {
       const target = new THREE.Vector3(...targetPosition);
       currentPosition.current.lerp(target, 0.1);
-      
+
       meshRef.current.position.copy(currentPosition.current);
 
       const direction = new THREE.Vector3().subVectors(target, currentPosition.current);
@@ -38,13 +38,13 @@ export default function Character3D({ position, targetPosition }: Character3DPro
             <cylinderGeometry args={[0.3, 0.3, 1, 16]} />
             <meshStandardMaterial color="#4a9eff" />
           </mesh>
-          
+
           {/* Cabeza */}
           <mesh position={[0, 1.2, 0]}>
             <sphereGeometry args={[0.35, 16, 16]} />
             <meshStandardMaterial color="#4a9eff" />
           </mesh>
-          
+
           {/* Esfera inferior */}
           <mesh position={[0, 0.3, 0]}>
             <sphereGeometry args={[0.3, 16, 16]} />
@@ -74,7 +74,11 @@ export default function Character3D({ position, targetPosition }: Character3DPro
       </mesh>
 
       {/* Sombra */}
-      <mesh position={[position[0], 0.01, position[2]]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <mesh
+        position={[position[0], 0.01, position[2]]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        receiveShadow
+      >
         <circleGeometry args={[0.4, 16]} />
         <meshBasicMaterial color="#000000" opacity={0.3} transparent />
       </mesh>

@@ -1,7 +1,7 @@
 // app/game.tsx
 // Pantalla del juego de exploración 3D
 
-"use client";
+'use client';
 
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';

@@ -6,7 +6,7 @@ import { AuthState } from '../types/auth.types';
 export const useAuth = () => {
   const [state, setState] = useState<AuthState>({
     session: null,
-    profile: null
+    profile: null,
   });
 
   const fetchProfile = async (session: Session) => {
@@ -16,12 +16,12 @@ export const useAuth = () => {
         .select('username')
         .eq('id', session.user.id)
         .single();
-        
+
       if (error) throw error;
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
-        profile: data
+        profile: data,
       }));
     } catch (error) {
       console.warn('Error fetching profile:', error);
@@ -31,17 +31,19 @@ export const useAuth = () => {
   useEffect(() => {
     // Initial session check
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setState(prev => ({ ...prev, session }));
+      setState((prev) => ({ ...prev, session }));
       if (session) fetchProfile(session);
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setState(prev => ({ ...prev, session }));
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setState((prev) => ({ ...prev, session }));
       if (session) {
         fetchProfile(session);
       } else {
-        setState(prev => ({ ...prev, profile: null }));
+        setState((prev) => ({ ...prev, profile: null }));
       }
     });
 
@@ -55,6 +57,6 @@ export const useAuth = () => {
   return {
     ...state,
     logout,
-    isLoggedIn: !!state.session
+    isLoggedIn: !!state.session,
   };
 };
