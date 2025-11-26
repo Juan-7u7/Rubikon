@@ -6,7 +6,7 @@
 
     // "paths" SE HA ELIMINADO DE AQUÍ
 
-    "types": [],
+    "types": ["jest"],
     "esModuleInterop": true,
     "importHelpers": true
   },
