@@ -567,7 +567,8 @@ export default function GameMap3D({ joystickX, joystickY }: GameMap3DProps) {
   return (
     <View style={styles.container}>
       <div
-        ref={containerRef as any}
+        // @ts-ignore
+        ref={containerRef}
         style={{
           width: '100%',
           height: '100%',
